@@ -53,42 +53,52 @@
 
         if(!array_filter($erros))
         {
-            include('banco_dados/bcd_connect.php');
+            require('../bcd/bcd_connect.php');
 
-            $errosBCD = ['login' => '', 'email' => ''];
-
-            $login = mysqli_real_escape_string($conexao, $_POST['login']);
-            $email = mysqli_real_escape_string($conexao, $_POST['email']);
-            $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
-
-            $loginBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE login = '$login'");
-            $emailBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE email = '$email'");
-
-            $resultadoLogin = $loginBanco -> num_rows;
-            $resultadoEmail = $emailBanco -> num_rows;
-
-            if($resultadoLogin > 0)
+            if($conexao)
             {
-                $errosBCD['login'] = "Login já cadastrado";
-            }
-            if($resultadoEmail > 0)
-            {
-                $errosBCD['email'] = "E-mail já cadastrado";
-            }
 
-            if(!array_filter($errosBCD))
-            {
-                $comandoSQL = "INSERT INTO usuarios (login, email, senha) VALUES ('$login', '$email', '$senha');";
-                
-                if(mysqli_query($conexao, $comandoSQL))
-                {
-                    header('location: usuario-login.php');
-                }
-                else
-                {
-                    echo "Erro de comando: " . mysqli_error($conexao);
-                }
-            }
+	            $errosBCD = ['login' => '', 'email' => ''];
+
+	            $login = mysqli_real_escape_string($conexao, $_POST['login']);
+	            $email = mysqli_real_escape_string($conexao, $_POST['email']);
+	            $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
+
+	            $loginBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE login = '$login'");
+	            $emailBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE email = '$email'");
+
+	            $resultadoLogin = $loginBanco -> num_rows;
+	            $resultadoEmail = $emailBanco -> num_rows;
+
+	            if($resultadoLogin > 0)
+	            {
+	                $errosBCD['login'] = "Login já cadastrado";
+	            }
+	            if($resultadoEmail > 0)
+	            {
+	                $errosBCD['email'] = "E-mail já cadastrado";
+	            }
+
+	            if(!array_filter($errosBCD))
+	            {
+
+	                $comandoSQL = "INSERT INTO usuarios (login, email, senha) VALUES ('$login', '$email', '$senha');";
+	                
+	                if(mysqli_query($conexao, $comandoSQL))
+	                {
+	                    header('location: login-usuario.php');
+	                }
+	                else
+	                {
+	                    echo "Erro de comando: " . mysqli_error($conexao);
+	                }
+
+	            }
+	        }
+	        else
+	        {
+	        	$bcdErro = "Houve um problema no banco de dados";
+	        }
         }
     }
 
@@ -116,22 +126,38 @@
 
  	<h1>Cadastrar-se</h1>
 
+ 	<div style="width: 100%; text-align: center;">
+	 	<h2 style="color: red;">
+	 		<?php echo $bcdErro ?? ''; ?>
+	 	</h2>
+ 	</div>
+
 	<div class="container">
 	  
 		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formCadUsuario">
 			<div class="form-group">
 				<label class="control-label" for="inputLogin">Login</label>
-				<input class="form-control" type="text" name="login" id="inputLogin" required maxlength="40">
-				<span class="error"><?php echo $erros['login']; ?></span>
+				<input class="form-control" type="text" name="login" id="inputLogin" required maxlength="40" value="<?php echo $login ?? ''; ?>">
+				<span class="error">
+					<?php 
+						echo $erros['login'];
+						echo $errosBCD['login'] ?? '';
+					?>
+				</span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputEmail">E-mail</label>
-				<input class="form-control" type="email" name="email" id="inputEmail" required maxlength="50">
-				<span class="error"><?php echo $erros['email']; ?></span>
+				<input class="form-control" type="email" name="email" id="inputEmail" required maxlength="50" value="<?php echo $email ?? ''; ?>">
+				<span class="error">
+					<?php
+					 	echo $erros['email']; 
+					 	echo $errosBCD['email'] ?? '';
+					?>						
+				</span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputSenha">Senha</label>
-				<input class="form-control" type="password" name="senha" id="inputSenha" required maxlength="40">
+				<input class="form-control" type="password" name="senha" id="inputSenha" required maxlength="40" value="<?php echo $senha ?? ''; ?>">
 				<span class="error"><?php echo $erros['senha']; ?></span>
 			</div>
 			<div class="form-group">

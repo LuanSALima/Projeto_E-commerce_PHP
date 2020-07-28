@@ -1,4 +1,21 @@
 
+<?php 
+
+	session_start();
+
+	if($_SERVER['QUERY_STRING'] == 'logout')
+    {
+        //Remove a 'sessão usuario'
+        unset($_SESSION['usuario']);
+
+        //Remove todas as sessões
+        //session_unset(); 
+    }
+
+	$logado = $_SESSION['usuario'] ?? '';
+
+ ?>
+
 	<meta charset="utf-8">
  	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -31,8 +48,21 @@
 		      <li><a href="#">Page 3</a></li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
-		      <li><a href="registrar-usuario.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-		      <li><a href="login-usuario.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+		    	<?php if(!$logado): ?>
+					<li>
+						<a href="registrar-usuario.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a>
+					</li>
+					<li>
+						<a href="login-usuario.php"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+					</li>
+		      	<?php else: ?>
+					<li>
+						<a>Logado como: <?php echo $logado;	 ?></a>
+					</li>
+					<li>
+						<a href="<?php echo 'index.php?logout'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+					</li>
+		      	<?php endif; ?>
 		    </ul>
 		</div>
 	  </div>
