@@ -38,7 +38,7 @@
             	$login = mysqli_real_escape_string($conexao, $_POST['login-email']);
 		        $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
 
-		        $comandoSQL = "SELECT login, senha FROM usuarios WHERE login = '$login' OR email = '$login';";
+		        $comandoSQL = "SELECT id, login, senha FROM usuarios WHERE login = '$login' OR email = '$login';";
 
 		        $resultado = mysqli_query($conexao, $comandoSQL);
 
@@ -63,7 +63,7 @@
 		            {
 		                session_start();
 
-		                $_SESSION['usuario'] = $login;
+		                $_SESSION['usuario'] = $usuario;
 
 		                header('Location: index.php');
 		            }

@@ -1,6 +1,6 @@
 
 <?php 
-
+	
 	session_start();
 
 	if($_SERVER['QUERY_STRING'] == 'logout')
@@ -29,7 +29,7 @@
  	<nav class="navbar navbar-default">
 	  <div class="container-fluid">
 	    <div class="navbar-header">
-	      <a class="navbar-brand" href="#">
+	      <a class="navbar-brand" href="index.php">
 	      	<?php echo $nomeSite; ?>
 	      </a>
 	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false">
@@ -42,10 +42,13 @@
 	    	
 	    <div class="collapse navbar-collapse" id="menu">
 		    <ul class="nav navbar-nav">
-		      <li><a href="#">Home</a></li>
-		      <li><a href="#">Page 1</a></li>
-		      <li><a href="#">Page 2</a></li>
-		      <li><a href="#">Page 3</a></li>
+		      <li><a href="index.php">Home</a></li>
+		      <li><a href="lista-produtos.php">Lista Produtos</a></li>
+		      	<?php if($logado): ?>
+					<li>
+						<a href="cadastrar-produto.php"><span>Cadastrar Produto</span></a>
+					</li>
+		      	<?php endif; ?>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
 		    	<?php if(!$logado): ?>
@@ -57,7 +60,7 @@
 					</li>
 		      	<?php else: ?>
 					<li>
-						<a>Logado como: <?php echo $logado;	 ?></a>
+						<a>Logado como: <?php echo $logado['login'];	 ?></a>
 					</li>
 					<li>
 						<a href="<?php echo 'index.php?logout'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
