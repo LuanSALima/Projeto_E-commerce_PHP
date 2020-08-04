@@ -14,6 +14,8 @@
 
 	$logado = $_SESSION['usuario'] ?? '';
 
+	session_write_close();
+
  ?>
 
 	<meta charset="utf-8">
@@ -59,6 +61,9 @@
 						<a href="login-usuario.php"><span class="glyphicon glyphicon-log-in"></span> Login</a>
 					</li>
 		      	<?php else: ?>
+		      		<li>
+						<a href="meus-produtos.php"><span>Meus Produtos</span></a>
+					</li>
 					<li>
 						<a>Logado como: <?php echo $logado['login'];	 ?></a>
 					</li>

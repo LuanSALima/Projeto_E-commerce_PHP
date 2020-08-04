@@ -4,20 +4,24 @@
 
 	session_start();
 
-	if(!isset($_SESSION['usuario']))
-	{
-		header('location: index.php');
-	}
+	$usuario = $_SESSION['usuario'] ?? '';
 
-	session_write_close();
+    session_write_close();
+
+    if(!$usuario)
+    {
+    	header('location: index.php');
+    }
 
 	$erros = ['nome' => '', 'preco' => '', 'imagem' => ''];
 
 	if(isset($_POST['cadastrar']))
 	{
-		$nome = htmlspecialchars($_POST['nome']);
-		$preco = htmlspecialchars($_POST['preco']);
+		$nome = trim(htmlspecialchars($_POST['nome']));
+		$preco = trim(htmlspecialchars($_POST['preco']));
 		$imagem = $_FILES['imagem'];
+
+		$precoReais = str_replace(',', '.', $preco);
 
 		if( empty($nome) )
         {
@@ -28,19 +32,16 @@
         	 $erros['nome'] = "Nome deve possuir no máximo 100 caracteres";
         }
 
-        if( empty($preco) )
+        if( empty($precoReais) )
         {
             $erros['preco'] = "Preencha o Preço";
         }
-        else if( !is_numeric($preco))
+        else if( !is_numeric($precoReais))
         {
-        	/*
-				Número decimal com ,
-        	*/
         	 $erros['preco'] = "Preço deve ser um número";
         }
 
-		if($imagem == NULL) 
+		if( $imagem['error'] == 4) 
 		{
 			$erros['imagem'] = "É necessário colocar uma imagem do seu produto";
 		}
@@ -52,11 +53,13 @@
 			{
 				$erros['imagem'] = "O arquivo deve ser uma imagem";
 			}
+			else if($imagem['size'] > 102400)
+			{
+				$erros['imagem'] = "A imagem deve ter no máximo 100 KB";
+			}
+
 		}
-/*
-
-	AO CONCLUIR AS VALIDAÇOES ADICIONAR O REQUIRED E MAXLENGHT NA TAG HTML E TIRAR O COMENTARIO DAKI
-
+		
 		if(!array_filter($erros))
 		{
 
@@ -71,7 +74,9 @@
 
 					$mysqlImg = addslashes(fread(fopen($nomeFinal, "r"), $tamanhoImg));
 
-					 $comandoSQL = "INSERT INTO produto (nome, preco, imagem) VALUES ('$nome', '$preco', '$mysqlImg');";
+					$idUsuario = $usuario['id'];
+
+					$comandoSQL = "INSERT INTO produto (id_usuario, nome, preco, imagem) VALUES ('$idUsuario', '$nome', '$precoReais', '$mysqlImg');";
 
 					if(!mysqli_query($conexao, $comandoSQL))
 	                {
@@ -88,7 +93,6 @@
 	        	$bcdErro = "Houve um problema no banco de dados";
 	        }
 		}
-*/
 	}
 
  ?>
@@ -128,20 +132,17 @@
 		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formCadProduto" enctype="multipart/form-data">
 			<div class="form-group">
 				<label class="control-label" for="inputNome">Nome</label>
-				<input class="form-control" type="text" name="nome" id="inputNome" value="<?php echo $nome ?? ''; ?>">
-				<!-- required maxlength="40" -->
+				<input class="form-control" type="text" name="nome" id="inputNome" required maxlength="100" value="<?php echo $nome ?? ''; ?>">
 				<span class="error"><?php echo $erros['nome']; ?></span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputPreco">Preço</label>
-				<input class="form-control" type="numeric" name="preco" id="inputPreco" value="<?php echo $preco ?? ''; ?>">
-				<!-- required maxlength="40" -->
+				<input class="form-control" type="numeric" name="preco" required id="inputPreco" value="<?php echo $preco ?? ''; ?>">
 				<span class="error"><?php echo $erros['preco']; ?></span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputImagem">Imagem</label>
 				<input type="file" name="imagem" id="inputImagem">
-				<!-- required maxlength="40" -->
 				<span>Formatos aceitos: .jpg ; .jpeg ; .png ;</span>
 				<span class="error"><?php echo $erros['imagem']; ?></span>
 			</div>

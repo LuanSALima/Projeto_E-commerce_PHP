@@ -20,7 +20,11 @@
     {
     	$bcdErro = "Houve um problema no banco de dados";
     }
-
+/*
+    echo '<pre>';
+    echo print_r($produtos);
+    echo '</pre>';
+*/
 
  ?>
 
@@ -50,20 +54,20 @@
 
 	 	<?php if(!isset($bcdErro)): ?>
 	 		<?php if(count($produtos)): ?>
-			 	<?php 	foreach ($produtos as $produto):	?>
+			 	<?php 	for($i = 0; $i < count($produtos) ; $i++):	?>
 
 			 		<div class="col-md-3">
 					    <div class="card card-inverse card-primary text-center">
-					    	<img style="width: 100%;height: 200px;" src="produtoImagem.php?IdProduto=<?php echo $produto['id']; ?>">
+					    	<img style="width: 100%;height: 200px;" src="produtoImagem.php?IdProduto=<?php echo $produtos[$i]['id']; ?>">
 					      	<div class="card-block">
-						        <h4 class="card-title"><?php echo htmlspecialchars($produto['nome']); ?></h4>
-						        <p class="card-text"><?php echo htmlspecialchars($produto['preco']); ?></p>
+						        <h4 class="card-title"><?php echo htmlspecialchars($produtos[$i]['nome']); ?></h4>
+						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produtos[$i]['preco'])); ?></p>
 						        <a href="http://v4-alpha.getbootstrap.com/components/card/" class="btn btn-primary">Comprar</a>
 					    	</div>
 					    </div>
 					</div>
 			
-			 	<?php endforeach; ?>
+			 	<?php endfor; ?>
 			<?php else: ?>
 				<h2>Não há produtos cadastrados!</h2>
 			<?php endif; ?>

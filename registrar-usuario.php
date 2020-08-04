@@ -6,9 +6,9 @@
 
     if(isset($_POST['cadastrar']))
     {
-        $login = htmlspecialchars($_POST['login']);
-        $email = htmlspecialchars($_POST['email']);
-        $senha = htmlspecialchars($_POST['senha']);
+        $login = trim(htmlspecialchars($_POST['login']));
+        $email = trim(htmlspecialchars($_POST['email']));
+        $senha = trim(htmlspecialchars($_POST['senha']));
         $confirmarSenha = htmlspecialchars($_POST['confirmSenha']);
 
         if( empty($login) )
@@ -60,9 +60,9 @@
 
 	            $errosBCD = ['login' => '', 'email' => ''];
 
-	            $login = mysqli_real_escape_string($conexao, $_POST['login']);
-	            $email = mysqli_real_escape_string($conexao, $_POST['email']);
-	            $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
+	            $login = trim(mysqli_real_escape_string($conexao, $_POST['login']));
+	            $email = trim(mysqli_real_escape_string($conexao, $_POST['email']));
+	            $senha = trim(mysqli_real_escape_string($conexao, $_POST['senha']));
 
 	            $loginBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE login = '$login'");
 	            $emailBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE email = '$email'");
