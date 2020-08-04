@@ -129,25 +129,42 @@
 
 	<div class="container">
 	  
-		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formCadProduto" enctype="multipart/form-data">
+		<form class="col-md-9" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formCadProduto" enctype="multipart/form-data">
 			<div class="form-group">
 				<label class="control-label" for="inputNome">Nome</label>
-				<input class="form-control" type="text" name="nome" id="inputNome" required maxlength="100" value="<?php echo $nome ?? ''; ?>">
+				<input class="form-control" type="text" name="nome" id="inputNome" required maxlength="100" value="<?php echo $nome ?? ''; ?>" onchange="PreviewNome();">
 				<span class="error"><?php echo $erros['nome']; ?></span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputPreco">Preço</label>
-				<input class="form-control" type="numeric" name="preco" required id="inputPreco" value="<?php echo $preco ?? ''; ?>">
+				<div class="input-group">
+					<span class="input-group-addon">R$</span>
+					<input class="form-control" type="numeric" name="preco" required id="inputPreco" value="<?php echo $preco ?? ''; ?>" onchange="PreviewPreco();">
+				</div>
+				<label id="inputPreco-error" class="error" for="inputPreco"></label>
 				<span class="error"><?php echo $erros['preco']; ?></span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputImagem">Imagem</label>
-				<input type="file" name="imagem" id="inputImagem">
+				<input type="file" name="imagem" id="inputImagem" onchange="PreviewImage();">
 				<span>Formatos aceitos: .jpg ; .jpeg ; .png ;</span>
 				<span class="error"><?php echo $erros['imagem']; ?></span>
 			</div>
 			 <input type="submit" class="btn btn-default" name="cadastrar"></input>
 		</form>
+
+		<h1>Preview</h1>
+
+		<div class="col-md-3">
+		    <div class="card card-inverse card-primary text-center">
+		    	<img id="imagemPreview" style="width: 100%;height: 200px;">
+		      	<div class="card-block">
+			        <h4 class="card-title"><span id="nomePreview"><?php echo $nome ?? ''; ?></span></h4>
+			        <p class="card-text">R$ <span id="precoPreview"><?php echo $preco ?? ''; ?></span></p>
+			        <a class="btn btn-primary">Comprar</a>
+		    	</div>
+		    </div>
+		</div>
 
 	</div>
 
@@ -166,6 +183,24 @@
 		$(function(){
 			$("#formCadProduto").validate();
 		});
+
+	    function PreviewImage() {
+	        var oFReader = new FileReader();
+	        oFReader.readAsDataURL(document.getElementById("inputImagem").files[0]);
+
+	        oFReader.onload = function (oFREvent) {
+	            document.getElementById("imagemPreview").src = oFREvent.target.result;
+	        };
+	    };
+
+	    function PreviewNome() {
+	        document.getElementById("nomePreview").innerHTML = document.getElementById("inputNome").value;
+	    };
+
+	    function PreviewPreco() {
+	        document.getElementById("precoPreview").innerHTML = document.getElementById("inputPreco").value;
+	    };
+
 
 	</script>
 

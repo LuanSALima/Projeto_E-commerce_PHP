@@ -52,6 +52,15 @@
 	<div class="container">
 	  <h1>Meus Produtos</h1>
 
+	  	<div style="width: 100%; text-align: center;">
+		 	<h2 style="color: red;">
+		 		<?php
+		 			echo $bcdErro ?? ''; 
+		 			echo $erroBCD ?? '';
+		 		?>
+		 	</h2>
+	 	</div>
+
 	  	<?php if(!isset($bcdErro)): ?>
 	 		<?php if(count($produtos)): ?>
 			 	<?php 	foreach ($produtos as $produto):	?>
@@ -61,9 +70,9 @@
 					    	<img style="width: 100%;height: 200px;" src="produtoImagem.php?IdProduto=<?php echo $produto['id']; ?>">
 					      	<div class="card-block">
 						        <h4 class="card-title"><?php echo htmlspecialchars($produto['nome']); ?></h4>
-						        <p class="card-text"><?php echo htmlspecialchars($produto['preco']); ?></p>
-						        <a href="editar.php" class="btn btn-primary">Editar</a>
-						        <a href="remover.php" class="btn btn-danger">Remover</a>
+						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produto['preco'])); ?></p>
+						        <a href="editar-produto.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-primary">Editar</a>
+						        <a href="remover-produto.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-danger">Remover</a>
 					    	</div>
 					    </div>
 					</div>

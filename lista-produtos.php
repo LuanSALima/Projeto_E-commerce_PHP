@@ -55,6 +55,12 @@
 	 	<?php if(!isset($bcdErro)): ?>
 	 		<?php if(count($produtos)): ?>
 			 	<?php 	for($i = 0; $i < count($produtos) ; $i++):	?>
+			 		
+			 		<?php 
+
+			 			// PÁGINA DE CADASTRAR DE PRODUTOS POSSUI UM PREVIEW DO PRODUTO, ENTÃO CASO HAJA ALGUMA ALTERAÇÃO NESTE DESIGN, TAMBÉM DEVERÁ SER ALTERADO LÁ
+
+			 		 ?>
 
 			 		<div class="col-md-3">
 					    <div class="card card-inverse card-primary text-center">
