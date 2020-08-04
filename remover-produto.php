@@ -18,8 +18,7 @@
 
 	    if($usuario)
 	    {
-
-	    	if(isset($_POST['removerProduto']))
+	    	if(isset($_POST['remover']))
 	    	{
 	    		$idProduto = mysqli_real_escape_string($conexao, $_POST['idProduto']);
 
@@ -91,7 +90,7 @@
 
  <head>
 
- 	<title><?php echo $nomeSite; ?> - Remover</title>
+ 	<title><?php echo $nomeSite; ?> - Remover Produto</title>
 
  	<?php require('cabecalho.php') ?>
 
@@ -130,7 +129,7 @@
 			<div class="form-group">
 				<label class="control-label">Deseja Realmente Remover o Produto?</label>
 				<br>
-				<input class="btn btn-danger" type="submit" name="removerProduto" value="Sim">
+				<input class="btn btn-danger" type="submit" name="remover" value="Sim">
 				<a class="btn btn-primary" href="meus-produtos.php">Não</a>
 			</div>
 	 	</form>

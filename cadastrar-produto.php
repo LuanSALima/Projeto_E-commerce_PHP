@@ -73,7 +73,8 @@
 					$tamanhoImg = filesize($nomeFinal);
 
 					$mysqlImg = addslashes(fread(fopen($nomeFinal, "r"), $tamanhoImg));
-
+					$nome = mysqli_real_escape_string($conexao, $nome);
+					$precoReais = mysqli_real_escape_string($conexao, $precoReais);
 					$idUsuario = $usuario['id'];
 
 					$comandoSQL = "INSERT INTO produto (id_usuario, nome, preco, imagem) VALUES ('$idUsuario', '$nome', '$precoReais', '$mysqlImg');";
@@ -146,7 +147,7 @@
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputImagem">Imagem</label>
-				<input type="file" name="imagem" id="inputImagem" onchange="PreviewImage();">
+				<input type="file" name="imagem" id="inputImagem" onchange="PreviewImagem();">
 				<span>Formatos aceitos: .jpg ; .jpeg ; .png ;</span>
 				<span class="error"><?php echo $erros['imagem']; ?></span>
 			</div>
@@ -161,7 +162,6 @@
 		      	<div class="card-block">
 			        <h4 class="card-title"><span id="nomePreview"><?php echo $nome ?? ''; ?></span></h4>
 			        <p class="card-text">R$ <span id="precoPreview"><?php echo $preco ?? ''; ?></span></p>
-			        <a class="btn btn-primary">Comprar</a>
 		    	</div>
 		    </div>
 		</div>
@@ -184,7 +184,7 @@
 			$("#formCadProduto").validate();
 		});
 
-	    function PreviewImage() {
+	    function PreviewImagem() {
 	        var oFReader = new FileReader();
 	        oFReader.readAsDataURL(document.getElementById("inputImagem").files[0]);
 
@@ -200,7 +200,6 @@
 	    function PreviewPreco() {
 	        document.getElementById("precoPreview").innerHTML = document.getElementById("inputPreco").value;
 	    };
-
 
 	</script>
 
