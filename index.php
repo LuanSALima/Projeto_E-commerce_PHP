@@ -17,7 +17,7 @@
 	  <div class="jumbotron">
 	    <h1><?php echo $nomeSite; ?></h1>      
 	    <p>Um projeto e-commerce para fins educativos.</p>
-	  </div>   
+	  </div>
 	</div>
 
 	<!-- jQuery library -->

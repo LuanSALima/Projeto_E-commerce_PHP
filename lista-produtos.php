@@ -68,7 +68,7 @@
 					      	<div class="card-block">
 						        <h4 class="card-title"><?php echo htmlspecialchars($produtos[$i]['nome']); ?></h4>
 						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produtos[$i]['preco'])); ?></p>
-						        <a href="http://v4-alpha.getbootstrap.com/components/card/" class="btn btn-primary">Comprar</a>
+						        <a href="detalhes-produto.php?idProduto=<?php echo $produtos[$i]['id']; ?>" class="btn btn-primary">Comprar</a>
 					    	</div>
 					    </div>
 					</div>

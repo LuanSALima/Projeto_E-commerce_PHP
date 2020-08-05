@@ -176,18 +176,18 @@
 
  	<?php require('cabecalho.php') ?>
 
- 	<h1>Editar Produto</h1>
-
- 	<div style="width: 100%; text-align: center;">
-	 	<h2 style="color: red;">
-	 		<?php
-	 			echo $bcdErro ?? ''; 
-	 			echo $erroBCD ?? '';
-	 		?>
-	 	</h2>
- 	</div>
-
 	<div class="container">
+
+		<h1>Editar Produto</h1>
+
+		<div style="width: 100%; text-align: center;">
+		 	<h2 style="color: red;">
+		 		<?php
+		 			echo $bcdErro ?? ''; 
+		 			echo $erroBCD ?? '';
+		 		?>
+		 	</h2>
+	 	</div>
 	  
 	  	<?php if(!$erroBCD && !$bcdErro): ?>
 		<form class="col-md-9" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formEditarProduto" enctype="multipart/form-data">
