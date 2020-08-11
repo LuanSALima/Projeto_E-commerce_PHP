@@ -16,8 +16,17 @@
 
 			mysqli_close($conexao);
 
-			Header( "Content-type: image/gif");
-			echo $usuario['foto'];
+			if($usuario['foto'])
+			{
+				Header( "Content-type: image/gif");
+				echo $usuario['foto'];
+			}
+			else
+			{
+				Header( "Content-type: image/gif");
+				echo readfile("img/iconePerfil.png");
+			}
+			
 		}
 		else
 		{

@@ -75,6 +75,28 @@
 
     	}
 
+    	if(isset($_POST['removerComentario']))
+    	{
+    		if($usuario)
+    		{
+    			$idProduto = mysqli_real_escape_string($conexao,$_POST['idProduto']);
+    			$idUsuario = $usuario['id'];
+
+    			$comandoSQL = "DELETE FROM avaliacaoproduto WHERE id_produto = '$idProduto' AND id_autor = '$idUsuario'";
+
+    			if(!mysqli_query($conexao, $comandoSQL))
+				{
+					//não deletou
+					$erroBCD = "Não Foi possível deletar o Produto, tente novamente.";
+				}
+
+    		}
+    		else
+    		{
+    			$erroBCD = 'É necessário estar logado para remover seu comentário';
+    		}
+    	}
+
 
 		if($idProduto)
 		{				
@@ -92,7 +114,24 @@
 
 				mysqli_free_result($resultado);
 
-				$comandoAvaliacaoSQL = "SELECT id_autor, usuarios.login, nota, texto, data FROM avaliacaoproduto INNER JOIN usuarios ON avaliacaoproduto.id_autor = usuarios.id  WHERE id_produto = $idProduto";
+				if($usuario)
+				{
+					$idUsuario = $usuario['id'];
+
+					$comandoAvaliacaoLogadoSQL = "SELECT id_autor, usuarios.login, nota, texto, data FROM avaliacaoproduto INNER JOIN usuarios ON avaliacaoproduto.id_autor = usuarios.id  WHERE id_produto = $idProduto AND id_autor = '$idUsuario'";
+
+					$resultadoAvaliacaoLogado = mysqli_query($conexao, $comandoAvaliacaoLogadoSQL);
+
+					if(($resultadoAvaliacaoLogado -> num_rows)>0)
+					{
+						$avaliacaoLogado = mysqli_fetch_all($resultadoAvaliacaoLogado, MYSQLI_ASSOC)[0];
+					}
+
+					mysqli_free_result($resultadoAvaliacaoLogado);
+
+				}
+
+				$comandoAvaliacaoSQL = "SELECT id_autor, usuarios.login, nota, texto, data FROM avaliacaoproduto INNER JOIN usuarios ON avaliacaoproduto.id_autor = usuarios.id  WHERE id_produto = $idProduto ORDER BY data DESC";
 
 				$resultadoAvaliacao = mysqli_query($conexao, $comandoAvaliacaoSQL);
 
@@ -170,6 +209,19 @@
 		    color: #c59b08;
 		}
 
+		.notaComentario label:before
+		{
+			content: '★ ';
+			color: #ffc700;
+			font-size: 20px;
+		}
+
+		.avaliacaoUsuario
+		{
+			padding: 10px 20px;
+			background-color: #d4d0d0;
+		}
+
  	</style>
 
  	<?php require('cabecalho.php') ?>
@@ -204,6 +256,7 @@
 	  		<hr>
 	  		<br>
 
+	  		<?php if(!isset($avaliacaoLogado)): ?>
 	  		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formAvaliarProduto">
 	  			<div style="width: 100%; text-align: center;">
 				 	<h2 style="color: red;">
@@ -238,14 +291,64 @@
 			  	<div class="form-group">            
                         <input class="btn btn-success btn-circle text-uppercase" type="submit" id="submitComment" name="avaliar" value="Enviar Avaliação"></input>
                 </div>   
-
 	  		</form>
+	  		<?php else: ?>
+	  			<div class="avaliacaoUsuario">
+		  			<h2 style="text-align: center;">Sua Avaliação</h2>
+
+		  			<ul class="media-list">
+		  			<li class="media">
+	              		<!--Colocar link do perfil-->
+		                <a class="pull-left" href="#">
+		                  <img style="width: 128px; height: 128px;" class="media-object img-circle" src="perfilImagem.php?idUsuario=<?php echo $avaliacaoLogado['id_autor']; ?>"" alt="profile">
+		                </a>
+		                <div class="media-body">
+		                  <div class="well well-lg">
+		                      <h4 class="media-heading text-uppercase reviews">
+		                      	<?php echo $avaliacaoLogado['login']; ?> 
+		                      </h4>
+		                      <span>
+		                      	<?php echo $avaliacaoLogado['data']; ?>
+		                      </span>
+		                      <br>
+		                      <div class="notaComentario">
+		                      	<?php for($i = 0; $i< $avaliacaoLogado['nota']; $i++): ?>
+		                      		<label></label>
+		                      	<?php endfor; ?>
+		                      </div>
+		                      <br>
+		                      <p class="media-comment">
+		                        <?php echo $avaliacaoLogado['texto']; ?>
+		                      </p>
+
+		                      <a style="float: left;" class="btn btn-info btn-circle text-uppercase" href="#">Editar</a>
+
+		                      <form style="margin-left:5px;float: left;" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+		                      	<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">		
+		                      	<input class="btn btn-danger btn-circle text-uppercase" type="submit" name="removerComentario" value="Remover">                 
+		                  	  </form>
+		                  	  <br>
+		                  </div>              
+		                </div>
+	            	</li>
+	            	</ul>
+            	</div>
+	  		<?php endif; ?>
 
 	  		
 	  		<br><br><br>
 	  		<ul class="media-list">
 	  		<?php foreach ($avaliacoes as $avaliacao): ?>
-			
+	  			<?php if($usuario): ?>
+	  				<?php if($avaliacao['id_autor'] == $usuario['id']): ?>
+	  				<div class="avaliacaoUsuario">
+	  				<?php else: ?>
+	  				<div>
+	  				<?php endif; ?>
+	  			<?php else: ?>
+	  				<div>
+	  			<?php endif; ?>
+				
               	<li class="media">
               		<!--Colocar link do perfil-->
 	                <a class="pull-left" href="#">
@@ -259,15 +362,20 @@
 	                      <span>
 	                      	<?php echo $avaliacao['data']; ?>
 	                      </span>
-	                      <br><br>
-	                      <h5>Nota: <?php echo $avaliacao['nota']; ?></h5>
+	                      <br>
+	                      <div class="notaComentario">
+	                      	<?php for($i = 0; $i< $avaliacao['nota']; $i++): ?>
+	                      		<label></label>
+	                      	<?php endfor; ?>
+	                      </div>
+	                      <br>
 	                      <p class="media-comment">
 	                        <?php echo $avaliacao['texto']; ?>
 	                      </p>
 	                  </div>              
 	                </div>
             	</li>
-
+            	</div>
             <?php endforeach; ?>
             </ul>
 
