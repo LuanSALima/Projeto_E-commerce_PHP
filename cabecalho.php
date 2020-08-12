@@ -69,7 +69,7 @@
 				           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $logado['login'];	 ?>  <img style="width: 25px;height: 25px;border-radius: 100%;" src="perfilImagem.php?idUsuario=<?php echo $logado['id']; ?>""><span class="caret"></span></a>
 				           <ul class="dropdown-menu">
 				            	<li><a href="editar-usuario.php">Editar Perfil</a></li>
-				            	<li><a href="editar-usuario.php">Alterar Senha</a></li>
+				            	<li><a href="alterarSenha-usuario.php">Alterar Senha</a></li>
 				           </ul>
 					</li>
 					<li>

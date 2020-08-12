@@ -266,7 +266,7 @@
 			 <input type="submit" class="btn btn-default" name="editar" value="Editar"></input>
 		</form>
 		<?php else: ?>
-	 		<a href="meus-produtos.php">Voltar</a>
+	 		<a href="index.php">Voltar</a>
 	 	<?php endif; ?>
 
 	</div>
