@@ -75,7 +75,52 @@
 
     	}
 
-    	if(isset($_POST['removerComentario']))
+    	if(isset($_POST['editarAvaliacao']))
+    	{
+    		$erros = [];
+
+    		if($usuario)
+    		{
+		    	$idUsuario = $usuario['id'];
+		    	$idProduto = htmlspecialchars($_POST['idProduto']);
+
+	    		$comentarioAvaliacao = trim(htmlspecialchars($_POST['comentarioAvaliacao']));
+
+		        if(empty($comentarioAvaliacao))
+		        {
+		        	$erros['comentario'] = "Escreva um comentário sobre o produto";
+		        }
+		        else
+		        {
+		        	if(strlen($comentarioAvaliacao) > 150)
+		        	{
+		        		$erros['comentario'] = "Comentário deve possuir no máximo 150 caracteres";
+		        	}
+		        }
+
+		        if(!array_filter($erros))
+		        {
+		    		$idProduto = mysqli_real_escape_string($conexao, $_POST['idProduto']);
+		    		$notaAvaliacao = mysqli_real_escape_string($conexao, $_POST['notaAvaliacao']);
+		    		$comentarioAvaliacao = mysqli_real_escape_string($conexao, $_POST['comentarioAvaliacao']);
+
+		    		
+	    			$comandoSQL = "UPDATE avaliacaoproduto SET nota = '$notaAvaliacao', texto = '$comentarioAvaliacao' WHERE id_produto = '$idProduto' AND id_autor = '$idUsuario';";
+
+	    			if(!mysqli_query($conexao, $comandoSQL))
+					{
+						$erroBCD = "Não Foi possível editar o Produto, tente novamente.";
+					}
+		    	}
+
+	    	}
+    		else
+    		{
+    			$erroBCD = 'É necessário estar logado para editar seu comentário';
+    		}
+    	}
+
+    	if(isset($_POST['removerAvaliacao']))
     	{
     		if($usuario)
     		{
@@ -268,15 +313,15 @@
 	  			<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">
 	  			<div class="form-group">
 	  				<div class="notaAvaliacao">
-					    <input type="radio" id="star5" name="notaAvaliacao" value="5" />
+					    <input type="radio" id="star5" name="notaAvaliacao" value="5">
 					    <label for="star5" title="text">5 stars</label>
-					    <input type="radio" id="star4" name="notaAvaliacao" value="4" />
+					    <input type="radio" id="star4" name="notaAvaliacao" value="4">
 					    <label for="star4" title="text">4 stars</label>
-					    <input type="radio" id="star3" name="notaAvaliacao" value="3" />
+					    <input type="radio" id="star3" name="notaAvaliacao" value="3">
 					    <label for="star3" title="text">3 stars</label>
-					    <input type="radio" id="star2" name="notaAvaliacao" value="2" />
+					    <input type="radio" id="star2" name="notaAvaliacao" value="2">
 					    <label for="star2" title="text">2 stars</label>
-					    <input type="radio" id="star1" name="notaAvaliacao" value="1" />
+					    <input type="radio" id="star1" name="notaAvaliacao" value="1">
 					    <label for="star1" title="text">1 star</label>
 				  	</div>
 			  	</div>
@@ -293,45 +338,40 @@
                 </div>   
 	  		</form>
 	  		<?php else: ?>
-	  			<div class="avaliacaoUsuario">
+	  			<div>
 		  			<h2 style="text-align: center;">Sua Avaliação</h2>
 
-		  			<ul class="media-list">
-		  			<li class="media">
-	              		<!--Colocar link do perfil-->
-		                <a class="pull-left" href="#">
-		                  <img style="width: 128px; height: 128px;" class="media-object img-circle" src="perfilImagem.php?idUsuario=<?php echo $avaliacaoLogado['id_autor']; ?>"" alt="profile">
-		                </a>
-		                <div class="media-body">
-		                  <div class="well well-lg">
-		                      <h4 class="media-heading text-uppercase reviews">
-		                      	<?php echo $avaliacaoLogado['login']; ?> 
-		                      </h4>
-		                      <span>
-		                      	<?php echo $avaliacaoLogado['data']; ?>
-		                      </span>
-		                      <br>
-		                      <div class="notaComentario">
-		                      	<?php for($i = 0; $i< $avaliacaoLogado['nota']; $i++): ?>
-		                      		<label></label>
-		                      	<?php endfor; ?>
-		                      </div>
-		                      <br>
-		                      <p class="media-comment">
-		                        <?php echo $avaliacaoLogado['texto']; ?>
-		                      </p>
+		  			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formEditarAvaliacao">
+			  			<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">
+			  			<div class="form-group">
+			  				<div class="notaAvaliacao">
+			  					<span></span>
+							    <input <?php if($avaliacaoLogado['nota']==5){echo 'checked';} ?> type="radio" id="star5" name="notaAvaliacao" value="5">
+							    <label for="star5" title="text">5 stars</label>
+							    <input <?php if($avaliacaoLogado['nota']==4){echo 'checked';} ?> type="radio" id="star4" name="notaAvaliacao" value="4">
+							    <label for="star4" title="text">4 stars</label>
+							    <input <?php if($avaliacaoLogado['nota']==3){echo 'checked';} ?> type="radio" id="star3" name="notaAvaliacao" value="3">
+							    <label for="star3" title="text">3 stars</label>
+							    <input <?php if($avaliacaoLogado['nota']==2){echo 'checked';} ?> type="radio" id="star2" name="notaAvaliacao" value="2">
+							    <label for="star2" title="text">2 stars</label>
+							    <input <?php if($avaliacaoLogado['nota']==1){echo 'checked';} ?> type="radio" id="star1" name="notaAvaliacao" value="1">
+							    <label for="star1" title="text">1 star</label>
+						  	</div>
+					  	</div>
 
-		                      <a style="float: left;" class="btn btn-info btn-circle text-uppercase" href="#">Editar</a>
+					  	<div class="form-group">
+					  		<textarea class="form-control" placeholder="Deixe um comentário" name="comentarioAvaliacao" id="addComment" rows="5"><?php echo $avaliacaoLogado['texto'] ?? $comentarioAvaliacao ?? ''; ?></textarea>
+					  	</div>
 
-		                      <form style="margin-left:5px;float: left;" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-		                      	<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">		
-		                      	<input class="btn btn-danger btn-circle text-uppercase" type="submit" name="removerComentario" value="Remover">                 
-		                  	  </form>
-		                  	  <br>
-		                  </div>              
-		                </div>
-	            	</li>
-	            	</ul>
+					  	<div class="form-group">            
+		                        <input style="float: left"; class="btn btn-success btn-circle text-uppercase" type="submit" id="submitComment" name="editarAvaliacao" value="Editar">
+		                </div>   
+			  		</form>
+			  		<form style="margin-left:5px;float: left;" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+	                  	<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">		
+	                  	<input class="btn btn-danger btn-circle text-uppercase" type="submit" name="removerAvaliacao" value="Remover">		                  	 
+	               	</form>
+	               	<span class="error"><?php echo $erros['comentario'] ?? ''; ?></span>
             	</div>
 	  		<?php endif; ?>
 
