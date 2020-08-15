@@ -31,11 +31,8 @@
  	<h1>Login</h1>
 
  	<div style="width: 100%; text-align: center;">
-	 	<h2 style="color: red;">
-	 		<?php
-	 			echo $bcdErro ?? ''; 
-	 			echo $erroBCD ?? '';
-	 		?>
+	 	<h2 id="erroBCD" style="color: red;">
+	 		<?php echo $bcdErro ?? ''; ?>
 	 	</h2>
  	</div>
 
@@ -44,15 +41,19 @@
 		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formLoginUsuario">
 			<div class="form-group">
 				<label class="control-label" for="inputLogin">Login</label>
-				<input class="form-control" type="text" name="login-email" id="inputLoginEmail"  value="<?php echo $login_email ?? ''; ?>">
-				<span class="error"><?php echo $erros['login_email'] ?? ''; ?></span>
+				<input class="form-control" type="text" name="login_email" id="inputLoginEmail"  value="<?php echo $login_email ?? ''; ?>">
+				<span id="erroLoginEmail" class="error">
+					<?php echo $erros['login_email'] ?? ''; ?>
+				</span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="inputSenha">Senha</label>
 				<input class="form-control" type="password" name="senha" id="inputSenha" >
-				<span class="error"><?php echo $erros['senha'] ?? ''; ?></span>
+				<span id="erroSenha" class="error">
+					<?php echo $erros['senha'] ?? ''; ?>
+				</span>
 			</div>
-			 <input type="submit" class="btn btn-default" name="logar"></input>
+			 <button id="botaoLogar" type="submit" class="btn btn-default" name="logar">Logar</button>
 		</form>
 
 	</div>
@@ -64,7 +65,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
 
 	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>  
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
+
+	<script src="script/user-login.js"></script>
 
 	<script>
 		

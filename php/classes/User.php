@@ -60,6 +60,62 @@
 			}
 		}
 
+		public function logar($login_email, $senha)
+		{
+			try
+			{
+				$erros['login_email'] = $this->loginEmailIsValid($login_email);
+				$erros['senha'] = $this->senhaIsValid($senha);
+
+				if(!array_filter($erros))
+				{
+					$loginEmail = mysqli_real_escape_string($this->conexao, $login_email);
+					$senha = mysqli_real_escape_string($this->conexao, $senha);
+
+					$comandoSQL = "SELECT id, login, senha FROM usuarios WHERE login = '$loginEmail' OR email = '$loginEmail';";
+
+			        $resultado = mysqli_query($this->conexao, $comandoSQL);
+
+			        $usuario = mysqli_fetch_assoc($resultado);
+
+			        if(empty($usuario))
+			        {
+			            return "Login e E-mail não encontrado";
+			        }
+			        else
+			        {
+			            if($senha != $usuario['senha'])
+			            {
+			                return "Senha incorreta";
+			            }
+			            else
+			            {
+			                session_start();
+			                $_SESSION['usuario'] = $usuario;
+			                session_write_close();
+			                
+			                return 1;
+			            }
+			        }
+				}
+				else
+				{
+					return $erros;
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
+
+				mysqli_close($this->conexao);
+			}
+		}
+
 		private function loginIsValid($login)
 		{
 			if(empty($login))
@@ -96,7 +152,7 @@
 	        }
 	        else if( strlen($senha) > 40)
 	        {
-	        	 return "Senha deve possuir no máximo 40 caracteres";
+	        	return "Senha deve possuir no máximo 40 caracteres";
 	        }
 		}
 
@@ -109,6 +165,18 @@
 	        else if($senha != $confirmarSenha)
 	        {
 	            return "As senhas não coincidem";
+	        }
+		}
+
+		private function loginEmailIsValid($loginEmail)
+		{
+			if(empty($loginEmail))
+			{
+				return "Preencha o Login/E-mail";
+			}
+			else if(strlen($loginEmail) > 50)
+	        {
+	        	return "Login/Email deve possuir no máximo 50 caracteres";
 	        }
 		}
 
@@ -127,7 +195,12 @@
 			}
 			catch(Exception $e)
 			{
-				return 'Ocorreu um erro '.$e;
+				return 'Ocorreu um erro';
+			}
+			finally
+			{
+				if(isset($loginBanco))
+					mysqli_free_result($loginBanco);
 			}
 		}
 
@@ -146,92 +219,13 @@
 			}
 			catch(Exception $e)
 			{
-				return 'Ocorreu um erro '.$e;
+				return 'Ocorreu um erro';
 			}
-		}
-
-
-
-		public static function errosUsuario($login, $email, $senha, $confirmarSenha)
-		{
-			$errors = [];
-
-			$login = trim($login);
-			$email = trim($email);
-			$senha = trim($senha);
-			$confirmarSenha = trim($confirmarSenha);
-
-			if(empty($login))
+			finally
 			{
-				$errors['login'] = "Preencha o login";
+				if(isset($loginBanco))
+					mysqli_free_result($emailBanco);
 			}
-			else if (strlen($login) > 40)
-			{
-				$errors['login'] = "Login deve possuir no máximo 40 caracteres";
-			}
-
-			if( empty($email) )
-	        {
-	            $errors['email'] = "Preencha o e-mail";
-	        }
-	        else if( strlen($email) > 50)
-	        {
-	        	 $errors['email'] = "E-mail deve possuir no máximo 50 caracteres";
-	        }
-	        else if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-	        {
-	            $errors['email'] = "Digite um e-mail válido";
-	        }
-
-	        if( empty($senha) )
-	        {
-	            $errors['senha'] = "Preencha a senha";
-	        }
-	        else if( strlen($senha) > 40)
-	        {
-	        	 $errors['senha'] = "Senha deve possuir no máximo 40 caracteres";
-	        }
-
-	        if( empty($confirmarSenha) )
-	        {
-	            $errors['confirmarSenha'] = "Preencha a senha novamente";
-	        }
-	        else if($senha != $confirmarSenha)
-	        {
-	            $errors['confirmarSenha'] = "As senhas não coincidem";
-	        }
-
-	        return $errors;
 		}
-
-		public static function errosLogin($login_email, $senha)
-		{
-			$errors = [];
-
-			$login_email = trim($login_email);
-			$senha = trim($senha);
-
-			if(empty($login_email))
-	        {
-	            $errors['login_email'] = "Preencha o Login/E-mail";
-	        }
-	        else if(strlen($login_email) > 50)
-	        {
-	        	 $errors['login_email'] = "Login/Email deve possuir no máximo 50 caracteres";
-	        }
-
-	        if(empty($senha))
-	        {
-	            $errors['senha'] = "Preencha a senha";
-	        }
-	        else if(strlen($senha) > 40)
-	        {
-	        	 $errors['senha'] = "Senha deve possuir no máximo 40 caracteres";
-	        }
-
-	        return $errors;
-		}
-
 	}
-
  ?>
