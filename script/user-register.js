@@ -20,69 +20,56 @@ $(function(){
 				JSON: '1'
 			},
 
-			success: function(retornoPHP)
-			{
+			success: function(retornoPHP){
 				retornoJSON = JSON.parse(retornoPHP);
 
 				if(retornoJSON['erro'])
 				{	
 					if(retornoJSON['campos'])
 					{
-						if(retornoJSON['campos'].login)
-						{
+						if(retornoJSON['campos'].login) {
 							$('#erroLogin').html(retornoJSON['campos'].login);
-						}
-						else
-						{
+						}else{
 							$('#erroLogin').html('');
 						}
 
-						if(retornoJSON['campos'].email)
-						{
+						if(retornoJSON['campos'].email) {
 							$('#erroEmail').html(retornoJSON['campos'].email);
-						}
-						else
-						{
+						}else{
 							$('#erroEmail').html('');
 						}
 
-						if(retornoJSON['campos'].senha)
-						{
+						if(retornoJSON['campos'].senha) {
 							$('#erroSenha').html(retornoJSON['campos'].senha);
-						}
-						else
-						{
+						}else{
 							$('#erroSenha').html('');
 						}
 
-						if(retornoJSON['campos'].confirmarSenha)
-						{
+						if(retornoJSON['campos'].confirmarSenha) {
 							$('#erroConfirmSenha').html(retornoJSON['campos'].confirmarSenha);
-						}
-						else
-						{
+						}else{
 							$('#erroConfirmSenha').html('');
 						}
 					}
 					else
 					{
-						if(retornoJSON['mensagem'])
-						{
+						if(retornoJSON['mensagem']){
 							$('#erroBCD').html(retornoJSON['mensagem']);
-						}
-						else
-						{
+						}else{
 							$('#erroBCD').html('');
 						}
 					}					
 				}
 				else
 				{
-					if(retornoJSON['sucesso'])
-					{
+					if(retornoJSON['sucesso']){
 						window.location = 'login-usuario.php';
 					}
 				}
+			},
+
+			error: function(){
+				$('#erroBCD').html('Ocorreu um erro durante a solicitação');
 			}
 		});
 	});

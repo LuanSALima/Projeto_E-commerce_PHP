@@ -1,125 +1,74 @@
-<?php 
-    
+<?php
     if(isset($_POST['cadastrar']))
     {
-        require('classes/User.php');
-
-        $login = htmlspecialchars($_POST['login']);
-        $email = htmlspecialchars($_POST['email']);
-        $senha = htmlspecialchars($_POST['senha']);
-        $confirmarSenha = htmlspecialchars($_POST['confirmSenha']);
-
-        $erros = Usuario::errosUsuario($login, $email, $senha, $confirmarSenha);
-
-        if(empty($erros))
+        try
         {
-            try
+            require('classes/BancoDados.php');
+            require('classes/User.php');
+
+            $conexao = new Conexao();
+            if(!empty($conexao))
             {
-                if(isset($_POST['JSON']))
-                {
-                    require('../../bcd/bcd_connect.php');
-                }
-                else
-                {
-                    require('../bcd/bcd_connect.php');
-                }
+                $login = trim(htmlspecialchars($_POST['login']));
+                $email = trim(htmlspecialchars($_POST['email']));
+                $senha = trim(htmlspecialchars($_POST['senha']));
+                $confirmarSenha = trim(htmlspecialchars($_POST['confirmSenha']));
 
-                if($conexao)
-                {
-                    $errosBCD = [];
+                $usuario = new Usuario($conexao->conectar());
 
-                    $login = trim(mysqli_real_escape_string($conexao, $_POST['login']));
-                    $email = trim(mysqli_real_escape_string($conexao, $_POST['email']));
-                    $senha = trim(mysqli_real_escape_string($conexao, $_POST['senha']));
+                $resultado = $usuario->cadastrar($login, $email, $senha, $confirmarSenha);
 
-                    $loginBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE login = '$login'");
-                    $emailBanco = mysqli_query($conexao, "SELECT * FROM usuarios WHERE email = '$email'");
-
-                    $resultadoLogin = $loginBanco -> num_rows;
-                    $resultadoEmail = $emailBanco -> num_rows;
-
-                    if($resultadoLogin > 0)
-                    {
-                        $errosBCD['login'] = "Login já cadastrado";
-                    }
-                    if($resultadoEmail > 0)
-                    {
-                        $errosBCD['email'] = "E-mail já cadastrado";
-                    }
-
-                    if(!array_filter($errosBCD))
-                    {
-                        $comandoSQL = "INSERT INTO usuarios (login, email, senha) VALUES ('$login', '$email', '$senha');";
-                        
-                        if(mysqli_query($conexao, $comandoSQL))
-                        {
-                            mysqli_close($conexao);
-
-                            if(isset($_POST['JSON']))
-                            {
-                                echo json_encode(array('sucesso' => 1));
-                            }
-                            else
-                            {
-                                header('location: login-usuario.php');
-                            }
-                        }
-                        else
-                        {
-                            if(isset($_POST['JSON']))
-                            {
-                                echo json_encode(array('erro' => 1, 'mensagem' => "Ocorreu um erro ao inserir no banco de dados"));
-                            }
-                            else
-                            {
-                                $bcdErro =  "Ocorreu um erro ao inserir no banco de dados";
-                                //mysqli_error($conexao);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(isset($_POST['JSON']))
-                        {
-                            echo json_encode(array('erro' => 1, 'campos' => $errosBCD));
-                        }
-                    }
-                }
-                else
+                if($resultado === 1)
                 {
                     if(isset($_POST['JSON']))
                     {
-                        echo json_encode(array('erro' => 1, 'mensagem' => 'Houve um problema no banco de dados'));
+                        echo json_encode(array('sucesso' => 1));
                     }
                     else
                     {
-                        $bcdErro = "Houve um problema no banco de dados";
+                        header('location: login-usuario.php');
                     }
-                }
-            }
-            catch(Exception $e)
-            {
-                if(isset($_POST['JSON']))
-                {
-                    echo json_encode(array('erro' => 1, 'mensagem' => "Ocorreu um erro interno no servidor"));
                 }
                 else
                 {
-                    $bcdErro = $e;
+                    if(is_array($resultado))
+                    {
+                        $erros = $resultado;
+
+                        if(isset($_POST['JSON']))
+                        {
+                            echo json_encode(array('erro' => 1, 'campos' => $erros));
+                        }
+                    }
+                    else
+                    {
+                        $bcdErro = $resultado;
+
+                        if(isset($_POST['JSON']))
+                        {
+                            echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                $bcdErro = "Houve um problema no banco de dados";
+
+                if(isset($_POST['JSON']))
+                {
+                    echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
                 }
             }
         }
-        else
+        catch(Exception $e)
         {
+            $bcdErro = "Ocorreu um problema interno no servidor";
+
             if(isset($_POST['JSON']))
             {
-                echo json_encode(array('erro' => 1, 'campos' => $erros));
+                echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
             }
         }
     }
-    else
-    {
-        header('location: ../index.php');
-    }
-
  ?>
