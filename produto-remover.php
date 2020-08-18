@@ -4,85 +4,70 @@
 
 	session_start();
 
-	$usuario = $_SESSION['usuario'] ?? '';
+	$usuarioLogado = $_SESSION['usuario'] ?? '';
 
     session_write_close();
 
-    $bcdErro = '';
-    $erroBCD = '';
+    if(!$usuarioLogado)
+	{
+	    header('location: index.php');
+	}
 
-    require('../bcd/bcd_connect.php');			
+    if(isset($_POST['remover']))
+	{
+		include('php/product-delete.php');
+	}
+	else
+	{
+		try
+    	{
+    		$idProduto = $_GET['idProduto'] ?? '';
 
-    if($conexao)
-    {
+    		if($idProduto)
+			{
+				$idProduto = htmlspecialchars($idProduto);
 
-	    if($usuario)
-	    {
-	    	if(isset($_POST['remover']))
-	    	{
-	    		$idProduto = mysqli_real_escape_string($conexao, $_POST['idProduto']);
+				require('php/classes/BancoDados.php');
+				require('php/classes/Product.php');
 
-				$comandoSQL = "DELETE FROM produto WHERE id = $idProduto;";
+				$conexao = (new Conexao())->conectar();
+		        if(!empty($conexao))
+		        {
+		        	$classeProduto = new Produto($conexao);
 
-				if(mysqli_query($conexao, $comandoSQL))
-				{
-					//deletou
-					header('location: meus-produtos.php');
-				}
-				else
-				{
-					//não deletou
-					$erroBCD = "Não Foi possível deletar o Produto, tente novamente.";
-				}
-	    	}
-	    	else
-	    	{
-		    	$idProduto = $_GET['idProduto'] ?? '';
+	                $resultado = $classeProduto->buscaProduto($idProduto);
 
-		    	if($idProduto)
-				{				
-			    	try
-			    	{
-				    	$idProduto = mysqli_real_escape_string($conexao, $idProduto);
-
-				    	$comandoSQL = "SELECT id, id_usuario, nome, preco, imagem FROM produto WHERE id = $idProduto";
-
-						$resultado = mysqli_query($conexao, $comandoSQL);
-
-						$produto = mysqli_fetch_all($resultado, MYSQLI_ASSOC)[0];
-
-						mysqli_free_result($resultado);
-
-						mysqli_close($conexao);
-
-						if($produto['id_usuario'] != $usuario['id'])
-						{
-							header('location: meus-produtos.php');
-						}
-					}
-					catch(Exception $e)
-					{
-						$erroBCD = "Não foi possível localizar o produto ";
-					}
-				}
-				else
-				{
-					$erroBCD = "Não foi possível localizar o produto";
-				}
+	                if(gettype($resultado) == 'string')
+	                {
+	                	$bcdErro = $resultado;
+	                }
+	                else
+	                {
+	                	if($resultado['id_usuario'] != $usuarioLogado['id'])
+	                	{
+	                		$bcdErro = "Não é possível remover o produto de outro usuário";
+	                	}
+	                	else
+	                	{
+	                		$produto = $resultado;
+	                	}
+	                }
+		        }
+		        else
+		        {
+		        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+		        }
+		    }
+	        else
+			{
+				$bcdErro = "Não foi possível localizar o produto";
 			}
 	    }
-	    else
-	    {
-	    	header('location: index.php');
-	    }
-
-    }
-    else
-    {
-    	$bcdErro = "Houve um problema no banco de dados";
-    }
-
-	
+	    catch(Exception $e)
+    	{
+    		$bcdErro = "Ocorreu um problema ao buscar o usuário";
+    	}
+	}
  ?>
 
  <!DOCTYPE html>
@@ -99,15 +84,12 @@
 
 	  	<div style="width: 100%; text-align: center;">
 		 	<h2 style="color: red;">
-		 		<?php
-		 			echo $bcdErro ?? ''; 
-		 			echo $erroBCD ?? '';
-		 		?>
+		 		<?php echo $bcdErro ?? ''; ?>
 		 	</h2>
 	 	</div>
 
 
-	 	<?php if(!$erroBCD && !$bcdErro): ?>
+	 	<?php if(!isset($bcdErro)): ?>
 	 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 	 		<input type="hidden" name="idProduto" value="<?php echo $produto['id']; ?>">
 	 		<div class="form-group">

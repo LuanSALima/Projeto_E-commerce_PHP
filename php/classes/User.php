@@ -409,7 +409,7 @@
 			}
 			finally
 			{
-				if(isset($loginBanco))
+				if(isset($emailBanco))
 					mysqli_free_result($emailBanco);
 			}
 		}
@@ -434,7 +434,7 @@
 			}
 			finally
 			{
-				if(isset($loginBanco))
+				if(isset($emailBanco))
 					mysqli_free_result($emailBanco);
 			}
 		}
@@ -461,8 +461,8 @@
 			}
 			finally
 			{
-				if(isset($loginBanco))
-					mysqli_free_result($emailBanco);
+				if(isset($resultadoSenhaBanco))
+					mysqli_free_result($resultadoSenhaBanco);
 			}
 		}
 	}

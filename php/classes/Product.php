@@ -56,7 +56,7 @@
 			}
 			catch(Exception $e)
 			{
-				return 'Ocorreu um erro interno'.$e;
+				return 'Ocorreu um erro interno';
 			}
 			finally
 			{
@@ -117,7 +117,7 @@
 			}
 			catch(Exception $e)
 			{
-				return 'Ocorreu um erro interno'.$e;
+				return 'Ocorreu um erro interno';
 			}
 			finally
 			{
@@ -164,14 +164,111 @@
 
 		}
 
-		public function deletar()
+		public function deletar($idProduto, $idUsuario)
 		{
+			try
+			{
+				$dono = $this->ownerProduct($idProduto, $idUsuario);
 
+				if($dono === 1)
+				{
+					$limpaAvaliacoes = $this->removeProductRating($idProduto);
+
+					if($limpaAvaliacoes === 1)
+					{
+						$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+						$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
+
+						$comandoSQL = "DELETE FROM produto WHERE id = $idProduto AND id_usuario = $idUsuario;";
+
+						if(mysqli_query($this->conexao, $comandoSQL))
+		                {
+		                    return 1;
+		                }
+		                else
+		                {
+		                	return "Não foi possível remover do banco de dados";
+		                }
+					}
+					else
+					{
+						return $limpaAvaliacoes;
+					}
+				}
+				else if($dono === 0)
+				{
+					return "Não é possível remover o produto de outro usuário";
+				}
+				else
+				{
+					return $dono;
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+			finally
+			{
+				mysqli_close($this->conexao);
+			}
+		}
+
+		private function removeProductRating($idProduto)
+		{
+			try
+			{
+				$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+
+				$comandoSQL = "DELETE FROM avaliacaoproduto WHERE id_produto = '$idProduto';";
+
+				if(mysqli_query($this->conexao, $comandoSQL))
+                {
+                    return 1;
+                }
+                else
+                {
+                	return "Não foi possível remover as avaliações do banco de dados";
+                }
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
 		}
 
 		public function detalhes()
 		{
 
+		}
+
+		private function ownerProduct($idProduto, $idUsuario)
+		{
+			try
+			{
+				$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+				$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
+
+				$resultado = mysqli_query($this->conexao, "SELECT * FROM produto WHERE id = '$idProduto' AND id_usuario = '$idUsuario'");
+
+				if($resultado -> num_rows)
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro';
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
+			}
 		}
 
 		private function nomeIsValid($nome)

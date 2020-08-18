@@ -53,6 +53,10 @@
 	                	}
 	                }
 		        }
+		        else
+		        {
+		        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+		        }
 		    }
 	        else
 			{

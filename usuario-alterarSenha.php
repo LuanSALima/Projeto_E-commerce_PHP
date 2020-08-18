@@ -30,7 +30,7 @@
 
 	<div class="container">
 
-		<h1>Editar Perfil	</h1>
+		<h1>Alterar Senha</h1>
 
 		<div style="width: 100%; text-align: center;">
 		 	<h2 id="erroBCD" style="color: red;">

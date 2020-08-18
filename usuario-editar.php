@@ -40,6 +40,10 @@
                 	$usuario = $resultado;
                 }
 	        }
+	        else
+	        {
+	        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+	        }
 	    }
 	    catch(Exception $e)
     	{

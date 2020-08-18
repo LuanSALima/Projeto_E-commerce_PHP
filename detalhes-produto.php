@@ -105,7 +105,7 @@
 		    		$comentarioAvaliacao = mysqli_real_escape_string($conexao, $_POST['comentarioAvaliacao']);
 
 		    		
-	    			$comandoSQL = "UPDATE avaliacaoproduto SET nota = '$notaAvaliacao', texto = '$comentarioAvaliacao' WHERE id_produto = '$idProduto' AND id_autor = '$idUsuario';";
+	    			$comandoSQL = "UPDATE avaliacaoproduto SET nota = '$notaAvaliacao', texto = '$comentarioAvaliacao', editado = 1 WHERE id_produto = '$idProduto' AND id_autor = '$idUsuario';";
 
 	    			if(!mysqli_query($conexao, $comandoSQL))
 					{
@@ -176,7 +176,7 @@
 
 				}
 
-				$comandoAvaliacaoSQL = "SELECT id_autor, usuarios.login, nota, texto, data FROM avaliacaoproduto INNER JOIN usuarios ON avaliacaoproduto.id_autor = usuarios.id  WHERE id_produto = $idProduto ORDER BY data DESC";
+				$comandoAvaliacaoSQL = "SELECT id_autor, usuarios.login, nota, texto, data, editado FROM avaliacaoproduto INNER JOIN usuarios ON avaliacaoproduto.id_autor = usuarios.id  WHERE id_produto = $idProduto ORDER BY data DESC";
 
 				$resultadoAvaliacao = mysqli_query($conexao, $comandoAvaliacaoSQL);
 
@@ -392,7 +392,7 @@
               	<li class="media">
               		<!--Colocar link do perfil-->
 	                <a class="pull-left" href="#">
-	                  <img style="width: 128px; height: 128px;" class="media-object img-circle" src="perfilImagem.php?idUsuario=<?php echo $avaliacao['id_autor']; ?>"" alt="profile">
+	                  <img style="width: 128px; height: 128px;" class="media-object img-circle" src="perfilImagem.php?idUsuario=<?php echo $avaliacao['id_autor']; ?>" alt="profile">
 	                </a>
 	                <div class="media-body">
 	                  <div class="well well-lg">
@@ -402,6 +402,9 @@
 	                      <span>
 	                      	<?php echo $avaliacao['data']; ?>
 	                      </span>
+	                      <?php if(isset($avaliacao['editado'])): ?>
+	                      	<span> (Editado)</span>
+	                      <?php endif; ?>
 	                      <br>
 	                      <div class="notaComentario">
 	                      	<?php for($i = 0; $i< $avaliacao['nota']; $i++): ?>

@@ -28,15 +28,14 @@
 
  	<?php require('cabecalho.php') ?>
 
- 	<h1>Login</h1>
-
- 	<div style="width: 100%; text-align: center;">
-	 	<h2 id="erroBCD" style="color: red;">
-	 		<?php echo $bcdErro ?? ''; ?>
-	 	</h2>
- 	</div>
-
 	<div class="container">
+		<h1>Login</h1>
+
+	 	<div style="width: 100%; text-align: center;">
+		 	<h2 id="erroBCD" style="color: red;">
+		 		<?php echo $bcdErro ?? ''; ?>
+		 	</h2>
+	 	</div>
 	  
 		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="formLoginUsuario">
 			<div class="form-group">

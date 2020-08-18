@@ -48,7 +48,7 @@
 		      <li><a href="lista-produtos.php">Lista Produtos</a></li>
 		      	<?php if($logado): ?>
 					<li>
-						<a href="cadastrar-produto.php"><span>Cadastrar Produto</span></a>
+						<a href="produto-cadastrar.php"><span>Cadastrar Produto</span></a>
 					</li>
 		      	<?php endif; ?>
 		    </ul>

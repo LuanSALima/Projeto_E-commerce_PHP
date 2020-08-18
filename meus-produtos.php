@@ -71,8 +71,8 @@
 					      	<div class="card-block">
 						        <h4 class="card-title"><?php echo htmlspecialchars($produto['nome']); ?></h4>
 						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produto['preco'])); ?></p>
-						        <a href="editar-produto.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-primary">Editar</a>
-						        <a href="remover-produto.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-danger">Remover</a>
+						        <a href="produto-editar.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-primary">Editar</a>
+						        <a href="produto-remover.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-danger">Remover</a>
 					    	</div>
 					    </div>
 					</div>
