@@ -43,7 +43,7 @@
 	    }
 	    catch(Exception $e)
     	{
-    		$bcdErro = "Ocorreu um problema ao buscar o usuário".$e;
+    		$bcdErro = "Ocorreu um problema ao buscar o usuário";
     	}
 	}
  ?>
@@ -130,6 +130,7 @@
 
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>  
+	
 	<script src="script/user-edit.js"></script>
 
 	<script>

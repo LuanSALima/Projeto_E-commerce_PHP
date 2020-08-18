@@ -1,28 +1,29 @@
-<?php 
-	if(isset($_POST['alterar']))
+<?php
+    if(isset($_POST['editar']))
     {
-    	try
-    	{
-    		require('classes/BancoDados.php');
-            require('classes/User.php');
+        try
+        {
+            require('classes/BancoDados.php');
+            require('classes/Product.php');
 
             session_start();
 
-			$usuarioLogado = $_SESSION['usuario'] ?? '';
+			$usuario = $_SESSION['usuario'] ?? '';
 
 		    session_write_close();
 
             $conexao = (new Conexao())->conectar();
             if(!empty($conexao))
             {
-            	$senhaAtual = trim(htmlspecialchars($_POST['senhaAtual']));
-                $novaSenha = trim(htmlspecialchars($_POST['novaSenha']));
-                $confirmNovaSenha = trim(htmlspecialchars($_POST['confirmNovaSenha']));
-        		$idUsuario = $usuarioLogado['id'];
+                $nome = trim(htmlspecialchars($_POST['nome']));
+				$preco = trim(htmlspecialchars($_POST['preco']));
+				$imagem = $_FILES['imagem'];
+				$idUsuario = $usuario['id'];
+                $idProduto = trim(htmlspecialchars($_POST['idProduto']));;
 
-				$usuario = new Usuario($conexao);
+                $produto = new Produto($conexao);
 
-                $resultado = $usuario->alterarSenha($senhaAtual, $novaSenha, $confirmNovaSenha, $idUsuario);
+                $resultado = $produto->editar($nome, $preco, $imagem, $idUsuario, $idProduto);
 
                 if($resultado === 1)
                 {
@@ -32,7 +33,7 @@
                     }
                     else
                     {
-                        header('location: index.php');
+                        header('location: meus-produtos.php');
                     }
                 }
                 else
@@ -66,16 +67,16 @@
                     echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
                 }
             }
-    	}
-    	catch(Exception $e)
-    	{
-    		$bcdErro = "Ocorreu um problema interno no servidor";
+        }
+        catch(Exception $e)
+        {
+            $bcdErro = "Ocorreu um problema interno no servidor";
 
             if(isset($_POST['JSON']))
             {
                 echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
             }
-    	}
+        }
     }
     else
     {

@@ -69,4 +69,15 @@
             }
         }
     }
+    else
+    {
+        if(isset($_POST['JSON']))
+        {
+            echo json_encode(array('erro' => 1, 'mensagem' => "Ocorreu um problema ao enviar os dados"));
+        }
+        else
+        {
+            header('location: ../index.php');
+        }
+    }
  ?>

@@ -178,8 +178,6 @@
 						}
 						else
 						{
-							$imagem = mysqli_real_escape_string($this->conexao, $imagem);
-
 							$nomeFinal = time().'.jpg';
 							if (move_uploaded_file($imagem['tmp_name'], $nomeFinal)) {
 								$tamanhoImg = filesize($nomeFinal);
@@ -214,10 +212,6 @@
 			catch(Exception $e)
 			{
 				return 'Ocorreu um erro interno';
-			}
-			finally
-			{
-				mysqli_close($this->conexao);
 			}
 		}
 
