@@ -1,15 +1,16 @@
 $(function(){
-	$('button#botaoLogar').on("click", function(e){
+	$('button#botaoEditar').on("click", function(e){
 		e.preventDefault();
 
-		var campos = new FormData($("form#formLoginUsuario").get(0));
-		campos.append("logar", "OK");
+		var campos = new FormData($("form#formEditarUsuario").get(0));
+		campos.append("editar", "OK");
 		campos.append("JSON", 1);
 
 		//Validação front-end aqui antes de enviar o ajax
 		$.ajax({
-			url: 'php/user-login.php',
+			url: 'php/user-edit.php',
 			type: 'POST',
+			enctype: 'multipart/form-data',
 			contentType : false,
 			processData : false,
 			data: campos,
@@ -21,16 +22,28 @@ $(function(){
 				{	
 					if(retornoJSON['campos'])
 					{
-						if(retornoJSON['campos'].login_email) {
-							$('#erroLoginEmail').html(retornoJSON['campos'].login_email);
+						if(retornoJSON['campos'].login) {
+							$('#erroLogin').html(retornoJSON['campos'].login);
 						}else{
-							$('#erroLoginEmail').html('');
+							$('#erroLogin').html('');
 						}
 
-						if(retornoJSON['campos'].senha) {
-							$('#erroSenha').html(retornoJSON['campos'].senha);
+						if(retornoJSON['campos'].email) {
+							$('#erroEmail').html(retornoJSON['campos'].email);
+						}else{
+							$('#erroEmail').html('');
+						}
+
+						if(retornoJSON['campos'].senhaAtual) {
+							$('#erroSenha').html(retornoJSON['campos'].senhaAtual);
 						}else{
 							$('#erroSenha').html('');
+						}
+
+						if(retornoJSON['campos'].imagem) {
+							$('#erroImagem').html(retornoJSON['campos'].imagem);
+						}else{
+							$('#erroImagem').html('');
 						}
 					}
 					else

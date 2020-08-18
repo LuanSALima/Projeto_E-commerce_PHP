@@ -2,23 +2,33 @@ $(function(){
 	$('button#botaoCadastrar').on("click", function(e){
 		e.preventDefault();
 
+		/*
 		var campoLogin = $('form#formCadUsuario #inputLogin').val();
 		var campoEmail = $('form#formCadUsuario #inputEmail').val();
 		var campoSenha = $('form#formCadUsuario #inputSenha').val();
 		var campoConfirmarSenha = $('form#formCadUsuario #inputConfirmSenha').val();
+		*/
+		
+		var campos = new FormData($("form#formCadUsuario").get(0));
+		campos.append("cadastrar", "OK");
+		campos.append("JSON", 1);
+
 
 		//Validação front-end aqui antes de enviar o ajax
 		$.ajax({
 			url: 'php/user-register.php',
 			type: 'POST',
-			data: {
+			/*data: {
 				login: campoLogin,
 				email: campoEmail,
 				senha: campoSenha,
 				confirmSenha: campoConfirmarSenha,
 				cadastrar: 'OK',
 				JSON: '1'
-			},
+			},*/
+			contentType : false,
+			processData : false,
+			data: campos,
 
 			success: function(retornoPHP){
 				retornoJSON = JSON.parse(retornoPHP);

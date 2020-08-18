@@ -6,7 +6,7 @@
             require('classes/BancoDados.php');
             require('classes/User.php');
 
-            $conexao = new Conexao();
+            $conexao = (new Conexao())->conectar();
             if(!empty($conexao))
             {
                 $login = trim(htmlspecialchars($_POST['login']));
@@ -14,7 +14,7 @@
                 $senha = trim(htmlspecialchars($_POST['senha']));
                 $confirmarSenha = trim(htmlspecialchars($_POST['confirmSenha']));
 
-                $usuario = new Usuario($conexao->conectar());
+                $usuario = new Usuario($conexao);
 
                 $resultado = $usuario->cadastrar($login, $email, $senha, $confirmarSenha);
 

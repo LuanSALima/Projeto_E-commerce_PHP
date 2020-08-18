@@ -1,15 +1,16 @@
 $(function(){
-	$('button#botaoLogar').on("click", function(e){
+	$('button#botaoAlterar').on("click", function(e){
 		e.preventDefault();
 
-		var campos = new FormData($("form#formLoginUsuario").get(0));
-		campos.append("logar", "OK");
+		var campos = new FormData($("form#formAlterarSenha").get(0));
+		campos.append("alterar", "OK");
 		campos.append("JSON", 1);
 
 		//Validação front-end aqui antes de enviar o ajax
 		$.ajax({
-			url: 'php/user-login.php',
+			url: 'php/user-editPassword.php',
 			type: 'POST',
+			enctype: 'multipart/form-data',
 			contentType : false,
 			processData : false,
 			data: campos,
@@ -21,16 +22,22 @@ $(function(){
 				{	
 					if(retornoJSON['campos'])
 					{
-						if(retornoJSON['campos'].login_email) {
-							$('#erroLoginEmail').html(retornoJSON['campos'].login_email);
+						if(retornoJSON['campos'].senhaAtual) {
+							$('#erroSenhaAtual').html(retornoJSON['campos'].senhaAtual);
 						}else{
-							$('#erroLoginEmail').html('');
+							$('#erroSenhaAtual').html('');
 						}
 
-						if(retornoJSON['campos'].senha) {
-							$('#erroSenha').html(retornoJSON['campos'].senha);
+						if(retornoJSON['campos'].novaSenha) {
+							$('#erroNovaSenha').html(retornoJSON['campos'].novaSenha);
 						}else{
-							$('#erroSenha').html('');
+							$('#erroNovaSenha').html('');
+						}
+
+						if(retornoJSON['campos'].confirmNovaSenha) {
+							$('#erroConfirmNovaSenha').html(retornoJSON['campos'].confirmNovaSenha);
+						}else{
+							$('#erroConfirmNovaSenha').html('');
 						}
 					}
 					else

@@ -55,10 +55,10 @@
 		    <ul class="nav navbar-nav navbar-right">
 		    	<?php if(!$logado): ?>
 					<li>
-						<a href="registrar-usuario.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a>
+						<a href="usuario-registrar.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a>
 					</li>
 					<li>
-						<a href="login-usuario.php"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+						<a href="usuario-login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a>
 					</li>
 		      	<?php else: ?>
 		      		<li>
@@ -66,10 +66,10 @@
 					</li>
 					<li>
 						<li class="dropdown">
-				           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $logado['login'];	 ?>  <img style="width: 25px;height: 25px;border-radius: 100%;" src="perfilImagem.php?idUsuario=<?php echo $logado['id']; ?>""><span class="caret"></span></a>
+				           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $logado['login'];	 ?>  <img style="width: 25px;height: 25px;border-radius: 100%;" src="perfilImagem.php?idUsuario=<?php echo $logado['id']; ?>"><span class="caret"></span></a>
 				           <ul class="dropdown-menu">
-				            	<li><a href="editar-usuario.php">Editar Perfil</a></li>
-				            	<li><a href="alterarSenha-usuario.php">Alterar Senha</a></li>
+				            	<li><a href="usuario-editar.php">Editar Perfil</a></li>
+				            	<li><a href="usuario-alterarSenha.php">Alterar Senha</a></li>
 				           </ul>
 					</li>
 					<li>

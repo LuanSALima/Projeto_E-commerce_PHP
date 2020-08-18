@@ -1,20 +1,28 @@
 <?php 
-    if(isset($_POST['logar']))
+	if(isset($_POST['alterar']))
     {
-        try
-        {
-            require('classes/BancoDados.php');
+    	try
+    	{
+    		require('classes/BancoDados.php');
             require('classes/User.php');
+
+            session_start();
+
+			$usuarioLogado = $_SESSION['usuario'] ?? '';
+
+		    session_write_close();
 
             $conexao = (new Conexao())->conectar();
             if(!empty($conexao))
             {
-                $login_email = trim(htmlspecialchars($_POST['login_email']));
-        		$senha = trim(htmlspecialchars($_POST['senha']));
+            	$senhaAtual = trim(htmlspecialchars($_POST['senhaAtual']));
+                $novaSenha = trim(htmlspecialchars($_POST['novaSenha']));
+                $confirmNovaSenha = trim(htmlspecialchars($_POST['confirmNovaSenha']));
+        		$idUsuario = $usuarioLogado['id'];
 
-                $usuario = new Usuario($conexao);
+				$usuario = new Usuario($conexao);
 
-                $resultado = $usuario->logar($login_email, $senha);
+                $resultado = $usuario->alterarSenha($senhaAtual, $novaSenha, $confirmNovaSenha, $idUsuario);
 
                 if($resultado === 1)
                 {
@@ -58,15 +66,15 @@
                     echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
                 }
             }
-        }
-        catch(Exception $e)
-        {
-            $bcdErro = "Ocorreu um problema interno no servidor";
+    	}
+    	catch(Exception $e)
+    	{
+    		$bcdErro = "Ocorreu um problema interno no servidor";
 
             if(isset($_POST['JSON']))
             {
                 echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
             }
-        }
+    	}
     }
  ?>
