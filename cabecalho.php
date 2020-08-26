@@ -45,7 +45,7 @@
 	    <div class="collapse navbar-collapse" id="menu">
 		    <ul class="nav navbar-nav">
 		      <li><a href="index.php">Home</a></li>
-		      <li><a href="lista-produtos.php">Lista Produtos</a></li>
+		      <li><a href="produto-listar.php">Lista Produtos</a></li>
 		      	<?php if($logado): ?>
 					<li>
 						<a href="produto-cadastrar.php"><span>Cadastrar Produto</span></a>

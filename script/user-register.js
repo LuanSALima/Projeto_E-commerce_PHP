@@ -73,7 +73,7 @@ $(function(){
 				else
 				{
 					if(retornoJSON['sucesso']){
-						window.location = 'login-usuario.php';
+						window.location = 'usuario-login.php';
 					}
 				}
 			},

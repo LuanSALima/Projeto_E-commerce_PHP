@@ -17,6 +17,43 @@
 	{
 		include('php/product-register.php');
 	}
+	else
+	{
+		include('php/classes/BancoDados.php');
+		require('php/classes/Product.php');
+	}
+	
+	try
+	{
+		$conexao = (new Conexao())->conectar();
+        if(!empty($conexao))
+        {
+        	$classeProduto = new Produto($conexao);
+
+            $resultado = $classeProduto->listaTags();
+
+            if(gettype($resultado) == 'string')
+            {
+            	$bcdErro = $resultado;
+            }
+            else
+            {
+            	$tags = $resultado;
+            }
+        }
+        else
+        {
+        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+        }
+	}
+	catch(Exception $e)
+	{
+		$bcdErro = "Ocorreu um problema ao carregar as tags";
+	}
+	finally
+	{
+		mysqli_close($conexao);
+	}
 
  ?>
 
@@ -71,7 +108,24 @@
 				<span>Formatos aceitos: .jpg ; .jpeg ; .png ;</span>
 				<span id="erroImagem" class="error"><?php echo $erros['imagem'] ?? ''; ?></span>
 			</div>
-			 <button id="botaoCadastrar" type="submit" class="btn btn-default" name="cadastrar">Cadastrar</button>
+			<div class="form-group">
+				<label class="control-label">Tags</label>
+				<?php foreach ($tags as $tag): ?>
+					<?php 
+						if(isset($tagsPost))
+						{
+							$check = in_array($tag['id'], $tagsPost) ? 'checked' : '';
+						}
+					?>
+				<div class="custom-control custom-checkbox">
+				    <input type="checkbox" name="tags[]" class="custom-control-input" id="<?php echo 'tag'.$tag['id']; ?>" value="<?php echo $tag['id']; ?>" <?php echo $check ?? ''; ?>>
+				    <label class="custom-control-label" for="<?php echo 'tag'.$tag['id']; ?>"><?php echo $tag['nome']; ?></label>
+				</div>
+
+				<?php endforeach; ?>
+				<span id="erroTag" class="error"><?php echo $erros['tags'] ?? ''; ?></span>
+			</div>
+			<button id="botaoCadastrar" type="submit" class="btn btn-default" name="cadastrar">Cadastrar</button>
 		</form>
 
 		<h1>Preview</h1>
@@ -98,7 +152,10 @@
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>  
 
-	<script src="script/product-register.js"></script>
+	<!--
+<script src="script/product-register.js"></script>
+	-->
+	
 
 	<script>
 		

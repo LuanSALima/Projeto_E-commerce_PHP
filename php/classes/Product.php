@@ -9,7 +9,61 @@
 			$this->conexao = $conexao;
 		}
 
-		public function cadastrar($nome, $preco, $imagem, $idUsuario)
+		public function listar($pagina)
+		{
+			try
+			{
+				$qntResultados = 8;
+
+
+				$pagina = mysqli_real_escape_string($this->conexao, $pagina);
+				$qntResultados = mysqli_real_escape_string($this->conexao, $qntResultados);
+
+				
+				$buscaTotal = "SELECT COUNT(*) FROM produto;";
+				$buscaTotal = mysqli_query($this->conexao, $buscaTotal);
+				$totalProdutos = $buscaTotal->fetch_row()[0];
+
+				$totalPaginas = ceil($totalProdutos/$qntResultados);
+
+				if($pagina > $totalPaginas)
+					$pagina = $totalPaginas;
+				if($pagina < 1)
+					$pagina = 1;
+
+		    	$comandoSQL = "SELECT id, id_usuario, nome, preco, imagem FROM produto LIMIT ".(($pagina-1)*$qntResultados).", $qntResultados;";
+
+				$resultado = mysqli_query($this->conexao, $comandoSQL);
+
+				if($resultado -> num_rows)
+				{
+					$produtos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+
+					foreach ($produtos as $produto) {
+						$produto['preco'] = $this->convertToReais($produto['preco']);
+					}
+					
+					return array('paginaAtual' => $pagina, 'ultimaPagina' => $totalPaginas, 'produtos' => $produtos);
+				}
+				else
+				{
+					return "Não há nenhum produto cadastrado";
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
+
+				mysqli_close($this->conexao);
+			}
+		}
+
+		public function cadastrar($nome, $preco, $imagem, $idUsuario, $tags)
 		{
 			try
 			{
@@ -18,6 +72,7 @@
 				$erros['nome'] = $this->nomeIsValid($nome);
 				$erros['preco'] = $this->precoIsValid($precoDolar);
 				$erros['imagem'] = $this->imagemIsValid($imagem);
+				$erros['tags'] = $this->tagIsValid($tags);
 
 				if(!array_filter($erros))
 				{
@@ -30,14 +85,15 @@
 						$tamanhoImg = filesize($nomeFinal);
 
 						$mysqlImg = addslashes(fread(fopen($nomeFinal, "r"), $tamanhoImg));
+						unlink($nomeFinal);
 
 						$comandoSQL = "INSERT INTO produto (id_usuario, nome, preco, imagem) VALUES ('$idUsuario', '$nome', '$precoDolar', '$mysqlImg');";
 
-						unlink($nomeFinal);
-
 						if(mysqli_query($this->conexao, $comandoSQL))
 		                {
-		                    return 1;
+		                    $ultimoID = mysqli_insert_id($this->conexao);
+
+		                    return $this->cadastrarTags($ultimoID, $tags);
 		                }
 		                else
 		                {
@@ -164,6 +220,27 @@
 
 		}
 
+		public function listaTags()
+		{
+			try
+			{
+				$comandoSQL = "SELECT id, nome FROM tag";
+
+				$resultado = mysqli_query($this->conexao, $comandoSQL);
+
+				return mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um problema ao carregar as tags";
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
+			}
+		}
+
 		public function deletar($idProduto, $idUsuario)
 		{
 			try
@@ -234,6 +311,31 @@
 			catch(Exception $e)
 			{
 				return 'Ocorreu um erro interno';
+			}
+		}
+
+		private function cadastrarTags($idProduto, $arrayTags)
+		{
+			try
+			{
+				$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+
+				foreach ($arrayTags as $tag) 
+				{
+					$tag = mysqli_real_escape_string($this->conexao, $tag);
+
+					$comandoSQL = "INSERT INTO tagsproduto (id_produto, id_tag) VALUES ($idProduto, $tag);";
+
+					if(!mysqli_query($this->conexao, $comandoSQL))
+	                {
+	                	return 'Não foi possivel cadastrar as tags corretamente';
+	                }
+
+				}
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao cadastrar as tags";
 			}
 		}
 
@@ -313,6 +415,22 @@
 				{
 					return "A imagem deve ter no máximo 100 KB";
 				}
+			}
+		}
+
+		private function tagIsValid($tags)
+		{	
+			if(empty($tags))
+			{
+				return "É necessário escolher pelo menos uma tag";
+			}
+			else if(!is_array($tags))
+			{
+				return "Tags inválida";
+			}
+			else if(!array_filter($tags, "is_numeric"))
+			{
+				return "Tags inválidas";
 			}
 		}
 

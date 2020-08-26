@@ -19,10 +19,11 @@
 				$preco = trim(htmlspecialchars($_POST['preco']));
 				$imagem = $_FILES['imagem'];
 				$idUsuario = $usuario['id'];
+                $tagsPost =  isset($_POST['tags']) ? $_POST['tags'] : null;
 
                 $produto = new Produto($conexao);
 
-                $resultado = $produto->cadastrar($nome, $preco, $imagem, $idUsuario);
+                $resultado = $produto->cadastrar($nome, $preco, $imagem, $idUsuario, $tagsPost);
 
                 if($resultado === 1)
                 {
