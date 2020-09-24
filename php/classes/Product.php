@@ -120,7 +120,7 @@
 			}
 		}
 
-		public function editar($nome, $preco, $imagem, $idUsuario, $idProduto)
+		public function editar($nome, $preco, $imagem, $idUsuario, $tags, $idProduto)
 		{
 			try
 			{
@@ -128,6 +128,7 @@
 
 				$erros['nome'] = $this->nomeIsValid($nome);
 				$erros['preco'] = $this->precoIsValid($precoDolar);
+				$erros['tags'] = $this->tagIsValid($tags);
 				if($imagem['error'] != 4)
 				{
 					$erros['imagem'] = $this->imagemIsValid($imagem);
@@ -159,7 +160,7 @@
 
 					if(mysqli_query($this->conexao, $comandoSQL))
 	                {
-	                    return 1;
+	                    return $this->editarTags($idProduto, $tags);
 	                }
 	                else
 	                {
@@ -174,10 +175,6 @@
 			catch(Exception $e)
 			{
 				return 'Ocorreu um erro interno';
-			}
-			finally
-			{
-				mysqli_close($this->conexao);
 			}
 		}
 
@@ -233,6 +230,27 @@
 			catch(Exception $e)
 			{
 				return "Ocorreu um problema ao carregar as tags";
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
+			}
+		}
+
+		public function buscaTagsProduto($idProduto)
+		{
+			try
+			{
+				$comandoSQL = "SELECT tag.id FROM tag INNER JOIN tagsproduto ON tagsproduto.id_tag = tag.id AND tagsproduto.id_produto = $idProduto;";
+
+				$resultado = mysqli_query($this->conexao, $comandoSQL);
+
+				return mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um problema ao carregar as tags do produto";
 			}
 			finally
 			{
@@ -330,12 +348,67 @@
 	                {
 	                	return 'Não foi possivel cadastrar as tags corretamente';
 	                }
-
 				}
+
+				return 1;
 			}
 			catch(Exception $e)
 			{
 				return "Ocorreu um erro ao cadastrar as tags";
+			}
+		}
+
+		private function editarTags($idProduto, $arrayTags)
+		{
+			try
+			{
+				$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+
+				if($resultado = mysqli_query($this->conexao, "SELECT id_tag FROM tagsproduto WHERE id_produto = ".$idProduto))
+				{
+					$tagsBCD = array();
+
+					while($row = $resultado->fetch_row()){
+						array_push($tagsBCD, $row[0]);
+					}
+
+					foreach ($tagsBCD as $tagBCD)
+					{
+						//Tag existe no BCD e não foi selecionada, Remover Tag
+						if(!in_array($tagBCD, $arrayTags))
+						{
+							if(!mysqli_query($this->conexao, "DELETE FROM tagsproduto WHERE id_produto = ".$idProduto." AND id_tag = ".$tagBCD))
+							{
+								return "Ocorreu um erro ao editar tag removida do banco de dados";
+							}
+						}
+					}
+
+					foreach ($arrayTags as $editTag)
+					{
+						//Tag foi selecionada e não existe no BCD, Adiciona Tag
+						if(!in_array($editTag, $tagsBCD))
+						{
+							if(!mysqli_query($this->conexao, "INSERT INTO tagsproduto (id_tag, id_produto) VALUES (".$editTag.", ".$idProduto.")"))
+							{
+								return "Ocorreu um erro ao editar tag cadastrada do banco de dados";
+							}
+						}
+					}
+					return 1;
+				}
+				else
+				{
+					return "Ocorreu um erro ao alterar as tags cadastradas";
+				}
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao editar as tags";
+			}
+			finally
+			{
+				mysqli_close($this->conexao);
 			}
 		}
 

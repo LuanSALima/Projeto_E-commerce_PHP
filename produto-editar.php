@@ -35,6 +35,13 @@
 		        {
 		        	$classeProduto = new Produto($conexao);
 
+		        	$tagsProduto = $classeProduto->buscaTagsProduto($idProduto);
+
+        			if(is_string($tagsProduto))
+            		{
+            			$bcdErro = $tagsProduto;
+            		}
+
 	                $resultado = $classeProduto->buscaProduto($idProduto);
 
 	                if(gettype($resultado) == 'string')
@@ -67,6 +74,22 @@
     	{
     		$bcdErro = "Ocorreu um problema ao buscar o usuário";
     	}
+	}
+	$conexaoTags = (new Conexao())->conectar();
+    if(!empty($conexaoTags))
+    {
+    	$classeProdutoTags = new Produto($conexaoTags);
+
+		$tags = $classeProdutoTags->listaTags();
+
+		if(is_string($tags))
+		{
+			$bcdErro = $tags;
+		}
+	}
+	else
+	{
+		$bcdErro = "Ocorreu um problema ao carregar as tags";
 	}
  ?>
 
@@ -123,6 +146,38 @@
 				<h4>Se nenhuma imagem for selecionada, será mantida a imagem anterior</h4>
 				<span id="erroImagem" class="error"><?php echo $erros['imagem'] ?? ''; ?></span>
 			</div>
+			<div class="form-group">
+				<label class="control-label">Tags</label>
+				<?php foreach ($tags as $tag): ?>
+					<?php
+						if(isset($tagsProduto))
+						{
+							foreach ($tagsProduto as $tagProd)
+							{
+								if(in_array($tag['id'], $tagProd))
+								{
+									$check = 'checked';
+									break;
+								}
+								else
+								{
+									$check = '';
+								}
+							}
+						}
+						else if(isset($tagsPost))
+						{
+							$check = in_array($tag['id'], $tagsPost) ? 'checked' : '';
+						}
+					?>
+				<div class="custom-control custom-checkbox">
+				    <input type="checkbox" name="tags[]" class="custom-control-input" id="<?php echo 'tag'.$tag['id']; ?>" value="<?php echo $tag['id']; ?>" <?php echo $check ?? ''; ?>>
+				    <label class="custom-control-label" for="<?php echo 'tag'.$tag['id']; ?>"><?php echo $tag['nome']; ?></label>
+				</div>
+
+				<?php endforeach; ?>
+				<span id="erroTag" class="error"><?php echo $erros['tags'] ?? ''; ?></span>
+			</div>
 			 <button id="botaoEditar" type="submit" class="btn btn-default" name="editar">Editar</button>
 		</form>
 
@@ -152,7 +207,10 @@
 
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>  
-
+	
+	<!--
+	
+	-->
 	<script src="script/product-edit.js"></script>
 
 	<script>

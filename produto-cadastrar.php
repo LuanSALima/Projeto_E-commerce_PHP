@@ -115,6 +115,7 @@
 						if(isset($tagsPost))
 						{
 							$check = in_array($tag['id'], $tagsPost) ? 'checked' : '';
+							print_r($tagsPost);
 						}
 					?>
 				<div class="custom-control custom-checkbox">
@@ -153,9 +154,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>  
 
 	<!--
-<script src="script/product-register.js"></script>
+
 	-->
-	
+	<script src="script/product-register.js"></script>
 
 	<script>
 		

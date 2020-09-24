@@ -56,6 +56,12 @@ $(function(){
 						}else{
 							$('#erroImagem').html('');
 						}
+
+						if(retornoJSON['campos'].tags) {
+							$('#erroTag').html(retornoJSON['campos'].tags);
+						}else{
+							$('#erroTag').html('');
+						}
 					}
 					else
 					{

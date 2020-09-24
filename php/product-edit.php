@@ -19,11 +19,12 @@
 				$preco = trim(htmlspecialchars($_POST['preco']));
 				$imagem = $_FILES['imagem'];
 				$idUsuario = $usuario['id'];
-                $idProduto = trim(htmlspecialchars($_POST['idProduto']));;
+                $idProduto = trim(htmlspecialchars($_POST['idProduto']));
+                $tagsPost =  isset($_POST['tags']) ? $_POST['tags'] : null;
 
                 $produto = new Produto($conexao);
 
-                $resultado = $produto->editar($nome, $preco, $imagem, $idUsuario, $idProduto);
+                $resultado = $produto->editar($nome, $preco, $imagem, $idUsuario, $tagsPost, $idProduto);
 
                 if($resultado === 1)
                 {
