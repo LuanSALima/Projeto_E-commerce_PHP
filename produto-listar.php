@@ -77,7 +77,7 @@
 
 	 	<?php if(!isset($bcdErro)): ?>
 	 		<?php if(count($produtos)): ?>
-			 	<?php 	for($i = 0; $i < count($produtos) ; $i++):	?>
+			 	<?php 	for($i = 0 ; $i < count($produtos) ; $i++):	?>
 			 		
 			 		<?php 
 
@@ -90,7 +90,10 @@
 					    	<img style="width: 100%;height: 200px;" src="produtoImagem.php?IdProduto=<?php echo $produtos[$i]['id']; ?>">
 					      	<div class="card-block">
 						        <h4 class="card-title"><?php echo htmlspecialchars($produtos[$i]['nome']); ?></h4>
-						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produtos[$i]['preco'])); ?></p>
+						        <?php foreach ($produtos[$i]['tags'] as $tag): ?>
+						        	<span class="badge"><?php echo $tag['nome']; ?></span>
+						        <?php endforeach; ?>
+						        <p style="margin-top: 10px;" class="card-text">R$ <?php echo htmlspecialchars($produtos[$i]['preco']); ?></p>
 						        <a href="detalhes-produto.php?idProduto=<?php echo $produtos[$i]['id']; ?>" class="btn btn-primary">Comprar</a>
 					    	</div>
 					    </div>

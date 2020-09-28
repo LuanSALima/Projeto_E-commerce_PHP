@@ -2,39 +2,54 @@
 
 	$nomeSite = "Projeto";
 
-	session_start();
-
-	$usuario = $_SESSION['usuario'] ?? '';
-
-    session_write_close();
-
-
-	if($usuario)
+	try
 	{
-		require('../bcd/bcd_connect.php');
+		session_start();
 
-	    if($conexao)
+		$usuario = $_SESSION['usuario'] ?? '';
+
+	    session_write_close();
+
+	    if(!empty($usuario))
 	    {
-	    	$idUsuario = $usuario['id'];
+	    	$pagina = $_GET['pagina'] ?? 1;
 
-	    	$comandoSQL = "SELECT id, nome, preco, imagem FROM produto WHERE id_usuario = $idUsuario";
+			require('php/classes/BancoDados.php');
+			require('php/classes/Product.php');
 
-			$resultado = mysqli_query($conexao, $comandoSQL);
+			$conexao = (new Conexao())->conectar();
+	        if(!empty($conexao))
+	        {
+	        	$classeProduto = new Produto($conexao);
 
-			$produtos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+	            $resultado = $classeProduto->listaProdutosUsuario($usuario['id'], $pagina);
 
-			mysqli_free_result($resultado);
-
-			mysqli_close($conexao);
+	            if(gettype($resultado) == 'string')
+	            {
+	            	$bcdErro = $resultado;
+	            }
+	            else if(gettype($resultado) == 'array')
+	            {
+	            	$produtos = $resultado['produtos'];
+	            }
+	            else
+	            {
+	            	$bcdErro = 'Resultado inesperado do Banco de Dados';
+	            }
+	        }
+	        else
+	        {
+	        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+	        }
 	    }
 	    else
 	    {
-	    	$bcdErro = "Houve um problema no banco de dados";
+	    	header('location: index.php');
 	    }
-	}
-	else
+    }
+    catch(Exception $e)
 	{
-		header('location: index.php');
+		$bcdErro = "Ocorreu um problema ao listar os produtos";
 	}
 
 
@@ -70,7 +85,10 @@
 					    	<img style="width: 100%;height: 200px;" src="produtoImagem.php?IdProduto=<?php echo $produto['id']; ?>">
 					      	<div class="card-block">
 						        <h4 class="card-title"><?php echo htmlspecialchars($produto['nome']); ?></h4>
-						        <p class="card-text">R$ <?php echo htmlspecialchars(str_replace('.', ',', $produto['preco'])); ?></p>
+						        <?php foreach ($produto['tags'] as $tag): ?>
+						        	<span class="badge"><?php echo $tag['nome']; ?></span>
+						        <?php endforeach; ?>
+						        <p style="margin-top: 10px;" class="card-text">R$ <?php echo htmlspecialchars($produto['preco']); ?></p>
 						        <a href="produto-editar.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-primary">Editar</a>
 						        <a href="produto-remover.php?idProduto=<?php echo $produto['id'] ?>" class="btn btn-danger">Remover</a>
 					    	</div>

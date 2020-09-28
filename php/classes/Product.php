@@ -31,16 +31,74 @@
 				if($pagina < 1)
 					$pagina = 1;
 
-		    	$comandoSQL = "SELECT id, id_usuario, nome, preco, imagem FROM produto LIMIT ".(($pagina-1)*$qntResultados).", $qntResultados;";
+		    	$comandoSQL = "SELECT id, id_usuario, nome, preco FROM produto LIMIT ".(($pagina-1)*$qntResultados).", $qntResultados;";
 
 				$resultado = mysqli_query($this->conexao, $comandoSQL);
 
 				if($resultado -> num_rows)
 				{
-					$produtos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+					$produtos = array();
+					while($row = mysqli_fetch_assoc($resultado))
+					{
+						$row['preco'] = $this->convertToReais($row['preco']);
+						$row['tags'] = $this->buscaTagsProduto($row['id']);
+						array_push($produtos, $row);
+					}
+					
+					return array('paginaAtual' => $pagina, 'ultimaPagina' => $totalPaginas, 'produtos' => $produtos);
+				}
+				else
+				{
+					return "Não há nenhum produto cadastrado";
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+			finally
+			{
+				if(isset($resultado))
+					mysqli_free_result($resultado);
 
-					foreach ($produtos as $produto) {
-						$produto['preco'] = $this->convertToReais($produto['preco']);
+				mysqli_close($this->conexao);
+			}
+		}
+
+		public function listaProdutosUsuario($idUsuario, $pagina)
+		{
+			try
+			{
+				$qntResultados = 8;
+
+				$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
+				$pagina = mysqli_real_escape_string($this->conexao, $pagina);
+				$qntResultados = mysqli_real_escape_string($this->conexao, $qntResultados);
+
+				
+				$buscaTotal = "SELECT COUNT(*) FROM produto;";
+				$buscaTotal = mysqli_query($this->conexao, $buscaTotal);
+				$totalProdutos = $buscaTotal->fetch_row()[0];
+
+				$totalPaginas = ceil($totalProdutos/$qntResultados);
+
+				if($pagina > $totalPaginas)
+					$pagina = $totalPaginas;
+				if($pagina < 1)
+					$pagina = 1;
+
+		    	$comandoSQL = "SELECT id, id_usuario, nome, preco FROM produto WHERE id_usuario = $idUsuario LIMIT ".(($pagina-1)*$qntResultados).", $qntResultados ;";
+
+				$resultado = mysqli_query($this->conexao, $comandoSQL);
+
+				if($resultado -> num_rows)
+				{
+					$produtos = array();
+					while($row = mysqli_fetch_assoc($resultado))
+					{
+						$row['preco'] = $this->convertToReais($row['preco']);
+						$row['tags'] = $this->buscaTagsProduto($row['id']);
+						array_push($produtos, $row);
 					}
 					
 					return array('paginaAtual' => $pagina, 'ultimaPagina' => $totalPaginas, 'produtos' => $produtos);
@@ -212,11 +270,6 @@
 			}
 		}
 
-		public function buscaProdutoUsuario()
-		{
-
-		}
-
 		public function listaTags()
 		{
 			try
@@ -242,7 +295,7 @@
 		{
 			try
 			{
-				$comandoSQL = "SELECT tag.id FROM tag INNER JOIN tagsproduto ON tagsproduto.id_tag = tag.id AND tagsproduto.id_produto = $idProduto;";
+				$comandoSQL = "SELECT tag.id, tag.nome FROM tag INNER JOIN tagsproduto ON tagsproduto.id_tag = tag.id AND tagsproduto.id_produto = $idProduto;";
 
 				$resultado = mysqli_query($this->conexao, $comandoSQL);
 
