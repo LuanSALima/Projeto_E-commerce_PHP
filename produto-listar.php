@@ -94,7 +94,7 @@
 						        	<span class="badge"><?php echo $tag['nome']; ?></span>
 						        <?php endforeach; ?>
 						        <p style="margin-top: 10px;" class="card-text">R$ <?php echo htmlspecialchars($produtos[$i]['preco']); ?></p>
-						        <a href="detalhes-produto.php?idProduto=<?php echo $produtos[$i]['id']; ?>" class="btn btn-primary">Comprar</a>
+						        <a href="detalhes-produto.php?idProduto=<?php echo $produtos[$i]['id']; ?>" class="btn btn-primary">Detalhes</a>
 					    	</div>
 					    </div>
 					</div>

@@ -324,19 +324,28 @@
 
 					if($limpaAvaliacoes === 1)
 					{
-						$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
-						$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
+						$limpaTags = $this->removeTagsProduct($idProduto);
 
-						$comandoSQL = "DELETE FROM produto WHERE id = $idProduto AND id_usuario = $idUsuario;";
+						if($limpaTags === 1)
+						{
+							$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+							$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
 
-						if(mysqli_query($this->conexao, $comandoSQL))
-		                {
-		                    return 1;
-		                }
-		                else
-		                {
-		                	return "Não foi possível remover do banco de dados";
-		                }
+							$comandoSQL = "DELETE FROM produto WHERE id = $idProduto AND id_usuario = $idUsuario;";
+
+							if(mysqli_query($this->conexao, $comandoSQL))
+			                {
+			                    return 1;
+			                }
+			                else
+			                {
+			                	return "Não foi possível remover do banco de dados";
+			                }
+						}
+						else
+						{
+							return $limpaTags;
+						}
 					}
 					else
 					{
@@ -377,6 +386,29 @@
                 else
                 {
                 	return "Não foi possível remover as avaliações do banco de dados";
+                }
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+		}
+
+		private function removeTagsProduct($idProduto)
+		{
+			try
+			{
+				$idProduto = mysqli_real_escape_string($this->conexao, $idProduto);
+
+				$comandoSQL = "DELETE FROM tagsproduto WHERE id_produto = '$idProduto';";
+
+				if(mysqli_query($this->conexao, $comandoSQL))
+                {
+                    return 1;
+                }
+                else
+                {
+                	return "Não foi possível remover as tags do banco de dados";
                 }
 			}
 			catch(Exception $e)
