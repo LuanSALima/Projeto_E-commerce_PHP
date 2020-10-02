@@ -1,5 +1,7 @@
 <?php
-	require('../bcd/bcd_connect.php');
+	require('php/classes/BancoDados.php');
+
+	$conexao = (new Conexao())->conectar();
 
 	$idUsuario = $_GET["idUsuario"];
 

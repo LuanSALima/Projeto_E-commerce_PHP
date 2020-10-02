@@ -29,6 +29,8 @@
 						$email = mysqli_real_escape_string($this->conexao, $email);
 						$senha = mysqli_real_escape_string($this->conexao, $senha);
 
+						$senha = $this->encript($senha);
+
 						$comandoSQL = "INSERT INTO usuarios (login, email, senha) VALUES ('$login', '$email', '$senha');";
 	                        
 	                    if(mysqli_query($this->conexao, $comandoSQL))
@@ -72,6 +74,8 @@
 					$loginEmail = mysqli_real_escape_string($this->conexao, $login_email);
 					$senha = mysqli_real_escape_string($this->conexao, $senha);
 
+					$senha = $this->encript($senha);
+
 					$comandoSQL = "SELECT id, login, senha FROM usuarios WHERE login = '$loginEmail' OR email = '$loginEmail';";
 
 			        $resultado = mysqli_query($this->conexao, $comandoSQL);
@@ -86,11 +90,12 @@
 			        {
 			            if($senha != $usuario['senha'])
 			            {
-			                return "Senha incorreta";
+			                return $senha." Senha incorreta ".$usuario['senha'];
 			            }
 			            else
 			            {
 			                session_start();
+			                unset($_SESSION['usuario']);
 			                $_SESSION['usuario'] = $usuario;
 			                session_write_close();
 			                
@@ -191,8 +196,7 @@
 
 						if(mysqli_query($this->conexao, $comandoSQL))
 		                {
-		                	$this->logar($login, $senhaAtual);
-		                    return 1;
+		                	return $this->logar($login, $senhaAtual);
 		                }
 		                else
 	                    {
@@ -229,9 +233,10 @@
 
 					if(!array_filter($errosBCD))
 					{
-						$senhaAtual = mysqli_real_escape_string($this->conexao, $senhaAtual);
 						$novaSenha = mysqli_real_escape_string($this->conexao, $novaSenha);
 						$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
+
+						$novaSenha = $this->encript($novaSenha);
 
 						$comandoSQL = "UPDATE usuarios SET senha = '$novaSenha' WHERE id = $idUsuario;";
 
@@ -446,6 +451,8 @@
 				$senha = mysqli_real_escape_string($this->conexao, $senha);
 				$idUsuario = mysqli_real_escape_string($this->conexao, $idUsuario);
 
+				$senha = $this->encript($senha);
+
 				$resultadoSenhaBanco = mysqli_query($this->conexao, "SELECT senha FROM usuarios WHERE id = '$idUsuario'");
 
 				$senhaBanco = mysqli_fetch_all($resultadoSenhaBanco, MYSQLI_ASSOC)[0];
@@ -464,6 +471,18 @@
 				if(isset($resultadoSenhaBanco))
 					mysqli_free_result($resultadoSenhaBanco);
 			}
+		}
+
+		private function encript($value)
+		{
+			$metodoEncriptamento = "AES-128-CTR";
+			$chaveEncriptamento = "TestingEncryption";
+			$opcoesEncriptamento = 0;
+			$vetorInicialEncriptamento = "7070707070707070";
+
+			$valorEncriptado = openssl_encrypt($value, $metodoEncriptamento, $chaveEncriptamento, $opcoesEncriptamento, $vetorInicialEncriptamento);;
+
+			return $valorEncriptado;
 		}
 	}
  ?>
