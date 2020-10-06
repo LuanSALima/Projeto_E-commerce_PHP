@@ -320,11 +320,14 @@
 
 				if($dono === 1)
 				{
-					$limpaAvaliacoes = $this->removeProductRating($idProduto);
+					/*
+						Alterado no BCD o ON DELETE/ON UPDATE para CASCADE, ou seja, quando for deletado o registro da chave primaria o registro onde a chave estrangeira foi cadastrado será deletado também
+					*/
+					$limpaAvaliacoes = 1;//$this->removeProductRating($idProduto);
 
 					if($limpaAvaliacoes === 1)
 					{
-						$limpaTags = $this->removeTagsProduct($idProduto);
+						$limpaTags = 1;//$this->removeTagsProduct($idProduto);
 
 						if($limpaTags === 1)
 						{

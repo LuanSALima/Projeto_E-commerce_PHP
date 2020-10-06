@@ -10,13 +10,16 @@
 
 	$idProduto = $_GET['idProduto'] ?? '';
 
-	require('../bcd/bcd_connect.php');
+	require('php/classes/BancoDados.php');
+	$conexao = (new Conexao())->conectar();
 
     $bcdErro = '';
     $erroBCD = '';
 
     if($conexao)
     {
+    	
+
     	if(isset($_POST['avaliar']))
     	{
     		$erros = [];
@@ -147,6 +150,18 @@
 		{				
 	    	try
 	    	{
+	    		require('php/classes/Analytics.php');
+		    	$classeAnalytics = new Access((new Conexao())->conectar());
+
+		    	$idUsuarioAcesso = empty($usuario) ? 0 : $usuario['id'];
+
+		    	$resultCadAcesso = $classeAnalytics->registerAccess($idUsuarioAcesso, $idProduto);
+
+		    	if($resultCadAcesso != 1)
+		    	{
+		    		$bcdErro = $resultCadAcesso;
+		    	}
+
 		    	$idProduto = mysqli_real_escape_string($conexao, $idProduto);
 
 		    	$comandoSQL = "SELECT produto.id, id_usuario, usuarios.login, nome, preco, imagem FROM produto INNER JOIN usuarios ON produto.id_usuario = usuarios.id WHERE produto.id = $idProduto";

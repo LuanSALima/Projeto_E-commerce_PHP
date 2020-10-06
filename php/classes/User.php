@@ -90,7 +90,7 @@
 			        {
 			            if($senha != $usuario['senha'])
 			            {
-			                return $senha." Senha incorreta ".$usuario['senha'];
+			                return "Senha incorreta";
 			            }
 			            else
 			            {

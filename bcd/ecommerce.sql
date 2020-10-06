@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 21-Ago-2020 às 19:21
--- Versão do servidor: 10.4.13-MariaDB
--- versão do PHP: 7.4.7
+-- Tempo de geração: 06-Out-2020 às 04:01
+-- Versão do servidor: 10.4.14-MariaDB
+-- versão do PHP: 7.4.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `ecommerce`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `acessosproduto`
+--
+
+CREATE TABLE `acessosproduto` (
+  `id` int(4) NOT NULL,
+  `id_usuario` int(4) NOT NULL,
+  `id_produto` int(4) NOT NULL,
+  `data` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -92,6 +105,14 @@ CREATE TABLE `usuarios` (
 --
 
 --
+-- Índices para tabela `acessosproduto`
+--
+ALTER TABLE `acessosproduto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_produto` (`id_produto`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
 -- Índices para tabela `avaliacaoproduto`
 --
 ALTER TABLE `avaliacaoproduto`
@@ -130,6 +151,12 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de tabela `acessosproduto`
+--
+ALTER TABLE `acessosproduto`
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `avaliacaoproduto`
 --
 ALTER TABLE `avaliacaoproduto`
@@ -158,11 +185,18 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- Limitadores para a tabela `acessosproduto`
+--
+ALTER TABLE `acessosproduto`
+  ADD CONSTRAINT `acessosproduto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `acessosproduto_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Limitadores para a tabela `avaliacaoproduto`
 --
 ALTER TABLE `avaliacaoproduto`
-  ADD CONSTRAINT `avaliacaoproduto_ibfk_1` FOREIGN KEY (`id_autor`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `avaliacaoproduto_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`);
+  ADD CONSTRAINT `avaliacaoproduto_ibfk_1` FOREIGN KEY (`id_autor`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `avaliacaoproduto_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limitadores para a tabela `produto`
@@ -174,8 +208,8 @@ ALTER TABLE `produto`
 -- Limitadores para a tabela `tagsproduto`
 --
 ALTER TABLE `tagsproduto`
-  ADD CONSTRAINT `tagsproduto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`),
-  ADD CONSTRAINT `tagsproduto_ibfk_2` FOREIGN KEY (`id_tag`) REFERENCES `tag` (`id`);
+  ADD CONSTRAINT `tagsproduto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tagsproduto_ibfk_2` FOREIGN KEY (`id_tag`) REFERENCES `tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

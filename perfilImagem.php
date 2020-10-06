@@ -1,6 +1,5 @@
 <?php
 	require('php/classes/BancoDados.php');
-
 	$conexao = (new Conexao())->conectar();
 
 	$idUsuario = $_GET["idUsuario"];
