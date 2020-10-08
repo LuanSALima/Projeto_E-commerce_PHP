@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 06-Out-2020 às 04:01
+-- Tempo de geração: 09-Out-2020 às 00:47
 -- Versão do servidor: 10.4.14-MariaDB
 -- versão do PHP: 7.4.10
 
@@ -97,6 +97,8 @@ CREATE TABLE `usuarios` (
   `login` varchar(40) NOT NULL,
   `email` varchar(50) NOT NULL,
   `senha` varchar(40) NOT NULL,
+  `confirmado` int(1) NOT NULL,
+  `token` varchar(32) NOT NULL,
   `foto` blob DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -189,7 +191,7 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `acessosproduto`
   ADD CONSTRAINT `acessosproduto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `acessosproduto_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `acessosproduto_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
 
 --
 -- Limitadores para a tabela `avaliacaoproduto`

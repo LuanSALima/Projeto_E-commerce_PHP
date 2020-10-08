@@ -3,6 +3,7 @@
 	class Usuario
 	{
 		private $conexao;
+		private $tokenGenerated;
 
 		public function __construct($conexao)
 		{
@@ -30,8 +31,9 @@
 						$senha = mysqli_real_escape_string($this->conexao, $senha);
 
 						$senha = $this->encript($senha);
+						$token = $this->generateToken();
 
-						$comandoSQL = "INSERT INTO usuarios (login, email, senha) VALUES ('$login', '$email', '$senha');";
+						$comandoSQL = "INSERT INTO usuarios (login, email, senha, confirmado, token) VALUES ('$login', '$email', '$senha', 0, '$token');";
 	                        
 	                    if(mysqli_query($this->conexao, $comandoSQL))
 	                    {
@@ -475,14 +477,131 @@
 
 		private function encript($value)
 		{
-			$metodoEncriptamento = "AES-128-CTR";
-			$chaveEncriptamento = "TestingEncryption";
-			$opcoesEncriptamento = 0;
-			$vetorInicialEncriptamento = "7070707070707070";
+			try
+			{
+				$metodoEncriptamento = "AES-128-CTR";
+				$chaveEncriptamento = "TestingEncryption";
+				$opcoesEncriptamento = 0;
+				$vetorInicialEncriptamento = "7070707070707070";
 
-			$valorEncriptado = openssl_encrypt($value, $metodoEncriptamento, $chaveEncriptamento, $opcoesEncriptamento, $vetorInicialEncriptamento);;
+				$valorEncriptado = openssl_encrypt($value, $metodoEncriptamento, $chaveEncriptamento, $opcoesEncriptamento, $vetorInicialEncriptamento);;
 
-			return $valorEncriptado;
+				return $valorEncriptado;
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao encriptar a senha";
+			}
+		}
+
+		private function generateToken()
+		{
+			try
+			{
+				$token = null;
+				while($token == null)
+				{
+					$numeroCaracteresToken = 16;
+					$listaCaracteres = str_split("abcdefghijklmnopqrstuvwxyz0123456789");
+
+					$charsToken = array();
+
+					for($i = 0 ; $i < $numeroCaracteresToken ; $i++)
+					{
+						$charAleatorio = rand(0, sizeof($listaCaracteres)-1);
+						$charsToken[$i] = $listaCaracteres[$charAleatorio];
+					}
+
+					$token = join('', $charsToken);
+
+					if($existeToken = mysqli_query($this->conexao, "SELECT token FROM usuarios WHERE token = '$token'"))
+					{
+						if($existeToken->num_rows)
+						{
+							$token = null;
+						}
+					}
+					else
+					{
+						return "Ocorreu um erro ao gerar o token de confirmação de email";
+					}
+				}
+
+				$this->tokenGenerated = $token;
+				return $token;
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao criar o token de confirmação de email";
+			}
+		}
+
+		public function confirmarToken($token)
+		{
+			try
+			{
+				if($resultado = mysqli_query($this->conexao, "SELECT id, login, senha FROM usuarios WHERE token = '$token';"))
+				{
+					$usuario = mysqli_fetch_assoc($resultado);
+
+					if(mysqli_query($this->conexao, "UPDATE usuarios SET confirmado = 1 WHERE id = ".$usuario['id']))
+					{
+						return 1;
+					}
+					else
+					{
+						return "Ocorreu um erro ao confirmar o token";
+					}
+				}
+				else
+				{
+					return "Token não encontrado !";
+				}
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao buscar o token";
+			}
+		}
+
+		public function isEmailConfirmed($idUsuario)
+		{
+			try
+			{
+				if($resultado = mysqli_query($this->conexao, "SELECT confirmado FROM usuarios WHERE id = $idUsuario"))
+				{
+					$confirmado = mysqli_fetch_assoc($resultado);
+
+					if($confirmado['confirmado'] == 1)
+					{
+						return 1;
+					}
+					else
+					{
+						return "É necessário confirmar o e-mail";
+					}
+				}
+				else
+				{
+					return "Ocorreu um erro ao buscar o usuario";
+				}
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro pesquisar se o email está confirmado";
+			}
+		}
+
+		public function getTokenGenerated()
+		{
+			if(isset($this->tokenGenerated))
+			{
+				return $this->tokenGenerated;
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
  ?>

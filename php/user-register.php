@@ -20,13 +20,29 @@
 
                 if($resultado === 1)
                 {
-                    if(isset($_POST['JSON']))
+                    require('classes/Email.php');
+                    $email = new Email();
+                    $resultadoEmail = $email->sendEmailConfirm($login, $usuario->getTokenGenerated());
+
+                    if($resultadoEmail === 1)
                     {
-                        echo json_encode(array('sucesso' => 1));
+                        if(isset($_POST['JSON']))
+                        {
+                            echo json_encode(array('sucesso' => 1));
+                        }
+                        else
+                        {
+                            header('location: usuario-login.php');
+                        }
                     }
                     else
                     {
-                        header('location: usuario-login.php');
+                        $bcdErro = "Ocorreu um erro ao enviar o email para confirmação de email";
+
+                        if(isset($_POST['JSON']))
+                        {
+                            echo json_encode(array('erro' => 1, 'mensagem' => $bcdErro));
+                        }
                     }
                 }
                 else
