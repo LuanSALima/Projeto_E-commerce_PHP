@@ -65,6 +65,11 @@
  	<?php require('cabecalho.php') ?>
 
 	<div class="container">
+
+	<?php if(!isset($bcdErro)): ?>
+		<a class="btn btn-primary pull-right" href="estatisticas-produtos.php">Estatísticas</a>
+	<?php endif; ?>
+
 	  <h1>Meus Produtos</h1>
 
 	  	<div style="width: 100%; text-align: center;">
@@ -77,6 +82,7 @@
 	 	</div>
 
 	  	<?php if(!isset($bcdErro)): ?>
+
 	 		<?php if(count($produtos)): ?>
 			 	<?php 	foreach ($produtos as $produto):	?>
 
