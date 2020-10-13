@@ -30,7 +30,7 @@
 			}
 			catch(Exception $e)
 			{
-				return 'Ocorreu um erro interno'.$e;
+				return 'Ocorreu um erro interno';
 			}
 			finally
 			{

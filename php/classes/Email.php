@@ -48,7 +48,7 @@
 			//$email->addAddress($email); Utilizarei meu próprio e-mail para testes
 			$email->Subject = "Confirmação do endereço de email";
 			$email->Body = "
-			 		<h1>Bem vindo <span style=\"color: green;\">".$userName."</span> ao Projeto E-commerce PHP</h1>
+			 		<h1>Bem vindo(a) <span style=\"color: green;\">".$userName."</span> ao Projeto E-commerce PHP</h1>
 					<hr>
 					<h3>Para continuar a acessar o nosso web site é necessário confirmar seu e-mail</h3>
 					<br>
@@ -82,7 +82,7 @@
 			//$email->addAddress($email); Utilizarei meu próprio e-mail para testes
 			$email->Subject = "Recuperar Senha";
 			$email->Body = "
-			 		<h1>Bem vindo ao Projeto E-commerce PHP</h1>
+			 		<h1>Bem vindo(a) ao Projeto E-commerce PHP</h1>
 					<hr>
 					<h3>Caso não tenha solicitado a recuperação de senha, tome cuidade! Pois tentaram recuperar a senha da conta com este e-mail cadastrado no nosso site.</h3>
 					<br>

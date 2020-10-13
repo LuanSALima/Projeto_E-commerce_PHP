@@ -24,10 +24,33 @@
  			font-size: 16px;
  		}
 
+ 		.carregando {
+		    display:    none;
+		    position:   fixed;
+		    z-index:    1000;
+		    top:        0;
+		    left:       0;
+		    height:     100%;
+		    width:      100%;
+		    background: rgba( 255, 255, 255, .8 ) 
+		                url('img/ajaxLoading.gif') 
+		                50% 50% 
+		                no-repeat;
+		}
+
+		body.carregando {
+		    overflow: hidden;   
+		}
+		body.carregando {
+		    display: block;
+		}
+
  	</style>
 
  	<?php require('cabecalho.php') ?>
 
+ 	<div id="carregando" class="carregando"></div>
+ 	
 	<div class="container">
 		<h1>Cadastrar-se</h1>
 

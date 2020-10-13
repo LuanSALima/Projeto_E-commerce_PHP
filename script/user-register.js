@@ -1,4 +1,12 @@
 $(function(){
+
+	/*Apresenta o Gif de Carregamento*/
+	$(document).ajaxStart(function(){
+		$('#carregando').show();
+	}).ajaxStop(function (){
+		$('#carregando').hide();
+	});
+
 	$('button#botaoCadastrar').on("click", function(e){
 		e.preventDefault();
 
