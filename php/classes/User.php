@@ -98,7 +98,7 @@
 			            {
 			                session_start();
 			                unset($_SESSION['usuario']);
-			                $_SESSION['usuario'] = $usuario;
+			                $_SESSION['usuario'] = array("id" => $usuario['id'], "login" => $usuario['login']);
 			                session_write_close();
 			                
 			                return 1;
@@ -254,6 +254,86 @@
 					else
 					{
 						return $errosBCD;
+					}
+				}
+				else
+				{
+					return $erros;
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+		}
+
+		public function recuperarSenha($token, $novaSenha, $confirmNovaSenha)
+		{
+			try
+			{
+				$erros['novaSenha'] = $this->senhaIsValid($novaSenha);
+				$erros['confirmNovaSenha'] = $this->confirmarSenhaIsValid($novaSenha, $confirmNovaSenha);
+
+				if(!array_filter($erros))
+				{
+					$tokenExiste = $this->existeToken($token);
+					
+					if($tokenExiste === 1)
+					{
+						$novaSenha = mysqli_real_escape_string($this->conexao, $novaSenha);
+						$token = mysqli_real_escape_string($this->conexao, $token);
+
+						$novaSenha = $this->encript($novaSenha);
+
+						if(mysqli_query($this->conexao, "UPDATE usuarios SET senha = '$novaSenha' WHERE token = '$token'"))
+						{
+							return 1;
+						}
+						else
+						{
+							return "Ocorreu um erro ao alterar a senha";
+						}
+					}
+					else
+					{
+						return $tokenExiste;
+					}
+				}
+				else
+				{
+					return $erros;
+				}
+			}
+			catch(Exception $e)
+			{
+				return 'Ocorreu um erro interno';
+			}
+		}
+
+		public function gerarTokenEmail($email)
+		{
+			try
+			{
+				$erros['email'] = $this->emailIsValid($email);
+
+				if(!array_filter($erros))
+				{
+					if($this->existEmail($email))
+					{
+						$tokenGerado = $this->generateToken();
+
+						if(mysqli_query($this->conexao, "UPDATE usuarios SET token = '$tokenGerado' WHERE email = '$email'"))
+						{
+							return 1;
+						}
+						else
+						{
+							return "Ocorreu um erro ao gerar o token de acesso para recuperar a senha";
+						}
+					}
+					else
+					{
+						return array("email" => "Nenhuma conta foi cadastrada neste e-mail");
 					}
 				}
 				else
@@ -484,7 +564,7 @@
 				$opcoesEncriptamento = 0;
 				$vetorInicialEncriptamento = "7070707070707070";
 
-				$valorEncriptado = openssl_encrypt($value, $metodoEncriptamento, $chaveEncriptamento, $opcoesEncriptamento, $vetorInicialEncriptamento);;
+				$valorEncriptado = openssl_encrypt($value, $metodoEncriptamento, $chaveEncriptamento, $opcoesEncriptamento, $vetorInicialEncriptamento);
 
 				return $valorEncriptado;
 			}
@@ -536,32 +616,53 @@
 			}
 		}
 
-		public function confirmarToken($token)
+		private function confirmToken($token)
 		{
 			try
 			{
-				if($resultado = mysqli_query($this->conexao, "SELECT id, login, senha FROM usuarios WHERE token = '$token';"))
+				if($resultado = mysqli_query($this->conexao, "SELECT id FROM usuarios WHERE token = '$token';"))
 				{
 					$usuario = mysqli_fetch_assoc($resultado);
 
-					if(mysqli_query($this->conexao, "UPDATE usuarios SET confirmado = 1 WHERE id = ".$usuario['id']))
+					if(!empty($usuario))
 					{
-						return 1;
+						return $usuario['id'];
 					}
 					else
 					{
-						return "Ocorreu um erro ao confirmar o token";
+						return "Token não encontrado";
 					}
 				}
 				else
 				{
-					return "Token não encontrado !";
+					return "Ocorreu um erro ao buscar o token";
 				}
 			}
 			catch(Exception $e)
 			{
 				return "Ocorreu um erro ao buscar o token";
 			}
+		}
+
+		public function confirmarEmail($token)
+		{
+			
+			if(is_numeric($resultadoToken = $this->confirmToken($token)))
+			{
+				if(mysqli_query($this->conexao, "UPDATE usuarios SET confirmado = 1 WHERE id = ".$resultadoToken))
+				{
+					return 1;
+				}
+				else
+				{
+					return "Ocorreu um erro ao confirmar o token";
+				}
+			}	
+			else
+			{
+				return $resultadoToken;
+			}
+				
 		}
 
 		public function isEmailConfirmed($idUsuario)
@@ -589,6 +690,34 @@
 			catch(Exception $e)
 			{
 				return "Ocorreu um erro pesquisar se o email está confirmado";
+			}
+		}
+
+		public function existeToken($token)
+		{
+			try
+			{
+				$token = mysqli_real_escape_string($this->conexao, $token);
+
+				if($resultado = mysqli_query($this->conexao, "SELECT id FROM usuarios WHERE token = '$token'"))
+				{
+					if($resultado -> num_rows)
+					{
+						return 1;
+					}
+					else
+					{
+						return "Este token não existe";
+					}
+				}
+				else
+				{
+					return "Ocorreu um erro ao buscar o token";
+				}
+			}
+			catch(Exception $e)
+			{
+				return "Ocorreu um erro ao procurar o token";
 			}
 		}
 

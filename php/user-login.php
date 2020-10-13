@@ -18,6 +18,23 @@
 
                 if($resultado === 1)
                 {
+
+                    if(isset($_POST['lembrar']))
+                    {
+
+                        session_start();
+                        $id = ($_SESSION['usuario'])['id'];
+                        $login = ($_SESSION['usuario'])['login'];
+                        session_write_close();
+
+                        $idEncriptado = openssl_encrypt($id, "AES-128-CTR", "LembrarConta", 0, "7070707070707070");
+
+                        $loginEncriptado = openssl_encrypt($login, "AES-128-CTR", "LembrarConta", 0, "7070707070707070");
+
+                        setcookie("lembrar_id", $idEncriptado, time() + (86400 * 365), "/");
+                        setcookie("lembrar_login", $loginEncriptado, time() + (86400 * 365), "/");
+                    }
+
                     if(isset($_POST['JSON']))
                     {
                         echo json_encode(array('sucesso' => 1));

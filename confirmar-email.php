@@ -12,15 +12,16 @@
         {
         	$classeUsuario = new Usuario($conexao);
 
-        	if(is_string($resultado = $classeUsuario->confirmarToken($_GET['token'])))
+        	$resultado = $classeUsuario->confirmarEmail($_GET['token']);
+
+        	if(is_string($resultado))
         	{
-        		$bcdErro = $resultado;
+        		$erro = $resultado;
         	}
-        	
         }
         else
         {
-        	$bcdErro = "Ocorreu um problema ao conectar ao Banco de Dados";
+        	$erro = "Ocorreu um problema ao conectar ao Banco de Dados";
         }
 	}
 	else

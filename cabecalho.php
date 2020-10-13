@@ -5,11 +5,23 @@
 
 	if($_SERVER['QUERY_STRING'] == 'logout')
     {
+        //Remove os Cookies de lembrar conta
+        setcookie("lembrar_id", '', time() - (86400 * 365), "/");
+        setcookie("lembrar_login", '', time() - (86400 * 365), "/");
+
         //Remove a 'sessão usuario'
         unset($_SESSION['usuario']);
+    }
+    else
+    {
+    	if(isset($_COOKIE['lembrar_id']) && isset($_COOKIE['lembrar_login']))
+		{
+			$idDesencriptado = openssl_decrypt($_COOKIE['lembrar_id'], "AES-128-CTR", "LembrarConta", 0, "7070707070707070");
 
-        //Remove todas as sessões
-        //session_unset(); 
+			$loginDesencriptado = openssl_decrypt($_COOKIE['lembrar_login'], "AES-128-CTR", "LembrarConta", 0, "7070707070707070");
+
+			$_SESSION['usuario'] = array('id' => $idDesencriptado, 'login' => $loginDesencriptado);
+		}
     }
 
 	$logado = $_SESSION['usuario'] ?? '';

@@ -28,21 +28,24 @@
 			$mail->SingleTo = true;
 
 
-			require('../../usuario-email.php');
+			require($_SERVER['DOCUMENT_ROOT'].'/usuario-email.php');
 
 			$mail->Username = $usuarioEmail;
 			$mail->Password = $senhaEmail;
 			$mail->From = $usuarioEmail;
 			$mail->FromName = "Equipe E-commerce_PHP";
+
+
 			$mail->addAddress($usuarioEmail);
 
 			return $mail;
 		}
 
-		public function sendEmailConfirm($userName, $token)
+		public function sendEmailConfirm($userEmail, $userName, $token)
 		{
 			$email = $this->configuration;
 
+			//$email->addAddress($email); Utilizarei meu próprio e-mail para testes
 			$email->Subject = "Confirmação do endereço de email";
 			$email->Body = "
 			 		<h1>Bem vindo <span style=\"color: green;\">".$userName."</span> ao Projeto E-commerce PHP</h1>
@@ -58,6 +61,42 @@
 						."
 						</a>
 					</h3>
+					<br><br>
+					<h4>Enviado para: ".$userEmail."</h4>
+			";
+
+			if($email->send())
+			{
+				return 1;
+			}
+			else
+			{
+				return $email->ErrorInfo;
+			}
+		}
+
+		public function sendPasswordRecover($userEmail, $token)
+		{
+			$email = $this->configuration;
+
+			//$email->addAddress($email); Utilizarei meu próprio e-mail para testes
+			$email->Subject = "Recuperar Senha";
+			$email->Body = "
+			 		<h1>Bem vindo ao Projeto E-commerce PHP</h1>
+					<hr>
+					<h3>Caso não tenha solicitado a recuperação de senha, tome cuidade! Pois tentaram recuperar a senha da conta com este e-mail cadastrado no nosso site.</h3>
+					<br>
+					<h3>
+						Clique neste link para recuperar sua senha:  
+						<a href=\"".
+						$_SERVER['SERVER_NAME']."/Projeto_E-commerce_PHP/recuperar-senha.php?token=".$token
+						."\">".
+						$_SERVER['SERVER_NAME']."/Projeto_E-commerce_PHP/recuperar-senha.php?token=".$token
+						."
+						</a>
+					</h3>
+					<br><br>
+					<h4>Enviado para: ".$userEmail."</h4>
 			";
 
 			if($email->send())

@@ -52,7 +52,14 @@
 					<?php echo $erros['senha'] ?? ''; ?>
 				</span>
 			</div>
-			 <button id="botaoLogar" type="submit" class="btn btn-default" name="logar">Logar</button>
+			<div class="form-group">
+				<input class="form" type="checkbox" name="lembrar">
+				<label control-label>Lembrar Conta?</label>
+			</div>
+			<div class="form-group">
+				<a href="recuperar-senha.php">Esqueci minha senha</a>
+			</div>
+			<button id="botaoLogar" type="submit" class="btn btn-default" name="logar">Logar</button>
 		</form>
 
 	</div>

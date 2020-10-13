@@ -21,8 +21,8 @@
                 if($resultado === 1)
                 {
                     require('classes/Email.php');
-                    $email = new Email();
-                    $resultadoEmail = $email->sendEmailConfirm($login, $usuario->getTokenGenerated());
+                    $classeEmail = new Email();
+                    $resultadoEmail = $classeEmail->sendEmailConfirm($email, $login, $usuario->getTokenGenerated());
 
                     if($resultadoEmail === 1)
                     {
@@ -37,6 +37,7 @@
                     }
                     else
                     {
+                        //$bcdErro = $resultadoEmail;
                         $bcdErro = "Ocorreu um erro ao enviar o email para confirmação de email";
 
                         if(isset($_POST['JSON']))
